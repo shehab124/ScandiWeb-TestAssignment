@@ -1,0 +1,21 @@
+.title
+{
+    margin-top: 1%;
+    margin-bottom: 1%;
+    margin-left: 14%;
+}
+
+.products
+{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-content: flex-start;
+    list-style: none;
+    flex-wrap: wrap;
+    margin: 10px 25px;
+    gap: 30px 20px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 70%;
+}
