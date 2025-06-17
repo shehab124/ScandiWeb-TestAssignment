@@ -1,1 +1,27 @@
-TODO: Add docker-compose.yml file // frontend
+version: '3'
+services:
+  www:
+    build: ./backend
+    volumes:
+      - ./backend/:/var/www/html # Mount the backend directory to the container
+    ports:
+      - 80:80 # Map port 80 to port 80 on the host
+  db:
+    image: mysql:5.6
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ALLOW_EMPTY_PASSWORD=1
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d # sync seed data from host to container
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - 8001:80
+    environment:
+      - PMA_HOST=db
+      - PMA_PORT=3306
+    depends_on:
+      - db
