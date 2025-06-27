@@ -24,7 +24,6 @@ class Database {
     }
     private function connect(): void {
         try {
-            // Use the correct DSN format with port and proper MySQL parameters
             $dsn = "mysql:host={$this->host};dbname={$this->name};charset={$this->charset}";
             $options = [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,

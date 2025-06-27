@@ -25,7 +25,7 @@ class GraphQL {
                     ],
                 ],
             ]);
-        
+
             $mutationType = new ObjectType([
                 'name' => 'Mutation',
                 'fields' => [
@@ -39,7 +39,7 @@ class GraphQL {
                     ],
                 ],
             ]);
-        
+
             // See docs on schema options:
             // https://webonyx.github.io/graphql-php/schema-definition/#configuration-options
             $schema = new Schema(
@@ -47,16 +47,16 @@ class GraphQL {
                 ->setQuery($queryType)
                 ->setMutation($mutationType)
             );
-        
+
             $rawInput = file_get_contents('php://input');
             if ($rawInput === false) {
                 throw new RuntimeException('Failed to get php://input');
             }
-        
+
             $input = json_decode($rawInput, true);
             $query = $input['query'];
             $variableValues = $input['variables'] ?? null;
-        
+
             $rootValue = ['prefix' => 'You said: '];
             $result = GraphQLBase::executeQuery($schema, $query, $rootValue, null, $variableValues);
             $output = $result->toArray();

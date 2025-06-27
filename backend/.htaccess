@@ -1,3 +1,8 @@
 RewriteEngine on
-RewriteRule .* /public/$0 [L]
+
+# Rewrite all requests to the public directory without changing the URL
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ public/index.php [QSA,L]
+
 DirectoryIndex index.php
