@@ -1,6 +1,6 @@
 CREATE TABLE categories (
-    name VARCHAR(50) PRIMARY KEY,
-    __typename VARCHAR(20) DEFAULT 'Category'
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE products (
@@ -8,10 +8,10 @@ CREATE TABLE products (
     name VARCHAR(255) NOT NULL,
     inStock BOOLEAN DEFAULT true,
     description TEXT,
-    category VARCHAR(50),
+    category_id INT,
     brand VARCHAR(100),
     __typename VARCHAR(20) DEFAULT 'Product',
-    FOREIGN KEY (category) REFERENCES categories(name)
+    FOREIGN KEY (category_id) REFERENCES categories(id)
 );
 
 CREATE TABLE product_gallery (

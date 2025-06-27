@@ -189,7 +189,6 @@ class QueryBuilder {
                 $sql .= $this->offset;
         }
 
-
         // remove extra spaces
         return preg_replace('/\s+/', ' ', $sql);
     }

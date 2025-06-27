@@ -4,8 +4,8 @@
 ```mermaid
 erDiagram
     Category {
-        string name PK
-        string __typename
+        int id PK
+        string name
     }
 
     Product {

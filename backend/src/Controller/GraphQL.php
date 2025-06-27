@@ -9,6 +9,8 @@ use GraphQL\Type\Schema;
 use GraphQL\Type\SchemaConfig;
 use RuntimeException;
 use Throwable;
+use App\TypeDefinitions\CategoryType;
+use App\Model\CategoryModel;
 
 class GraphQL {
     static public function handle() {
@@ -16,13 +18,14 @@ class GraphQL {
             $queryType = new ObjectType([
                 'name' => 'Query',
                 'fields' => [
-                    'echo' => [
-                        'type' => Type::string(),
-                        'args' => [
-                            'message' => ['type' => Type::string()],
-                        ],
-                        'resolve' => static fn ($rootValue, array $args): string => $rootValue['prefix'] . $args['message'],
-                    ],
+                    'categories' => [
+                        'type' => Type::listOf(new CategoryType()),
+                        'description' => 'Get all categories',
+                        'resolve' => static function ($rootValue, array $args): array {
+                            $categoryModel = new CategoryModel();
+                            return $categoryModel->getAll();
+                        },
+                    ]
                 ],
             ]);
 
