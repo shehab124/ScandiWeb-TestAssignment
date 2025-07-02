@@ -2,8 +2,10 @@
 
 namespace App\Database;
 
+use Exception;
 use PDO;
 use PDOStatement;
+use App\Service\Logger;
 
 class QueryBuilder {
 
@@ -19,10 +21,12 @@ class QueryBuilder {
     protected string $group = '';
     protected string $having = '';
     protected array $joins = [];
+    private $logger;
 
     public function __construct() {
         $connection = new Database();
         $this->pdo = $connection->getConnection();
+        $this->logger = Logger::getInstance();
     }
 
     public function select(string ...$columns): QueryBuilder
@@ -67,12 +71,15 @@ class QueryBuilder {
 
     private function where(string $column, string $operator, string $value, string $type = 'and'): QueryBuilder
     {
-        if($type == 'and')
-            $this->andWhere[] = " $column $operator :$column ";
-        else
-            $this->orWhere[] = " $column $operator :$column ";
+        // Replace dots with underscores because PDO doesn't support dots in parameter names
+        $paramName = str_replace('.', '_', $column);
 
-        $this->dataArr[$column] = $value;
+        if($type == 'and')
+            $this->andWhere[] = " $column $operator :$paramName ";
+        else
+            $this->orWhere[] = " $column $operator :$paramName ";
+
+        $this->dataArr[$paramName] = $value;
         return $this;
     }
     public function andWhere(string $column, string $operator, string $value): QueryBuilder
@@ -105,10 +112,10 @@ class QueryBuilder {
         return $this;
     }
 
-    public function get(): object
+    public function get(): array
     {
         $sql = $this->buildQuery('select');
-        return $this->query($sql)->fetch(PDO::FETCH_OBJ);
+        return $this->query($sql)->fetch(PDO::FETCH_ASSOC);
     }
 
     public function getAll(): array
@@ -190,13 +197,49 @@ class QueryBuilder {
         }
 
         // remove extra spaces
-        return preg_replace('/\s+/', ' ', $sql);
+        $finalSql = preg_replace('/\s+/', ' ', $sql);
+
+        // Log the built query for debugging
+        $this->logger->debug('SQL Query built', [
+            'mode' => $mode,
+            'original_sql' => $sql,
+            'final_sql' => $finalSql,
+            'joins' => $this->joins,
+            'where_conditions' => array_merge($this->andWhere, $this->orWhere)
+        ]);
+
+        return $finalSql;
     }
 
     private function query(string $sql): PDOStatement|bool
     {
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute($this->dataArr);
+        $this->logger->error('dataArray', [
+            'dataArray' => $this->dataArr
+        ]);
+        try{
+            $this->logger->info('SQL', [
+                'sql before prepare' => $sql
+            ]);
+            $stmt = $this->pdo->prepare($sql);
+            $this->logger->info('SQL', [
+                'sql after prepare' => $sql
+            ]);
+            $stmt->execute($this->dataArr);
+        }
+        catch(Exception)
+        {
+            $this->logger->error('Prepare Statment Fails!!!');
+        }
+
+
+        // Log the SQL query with parameters
+        $this->logger->info('SQL Query executed', [
+            'sql' => $sql,
+            'parameters' => $this->dataArr,
+            'table' => $this->from,
+            'select' => $this->select
+        ]);
+
         $this->setDefaultValues();
         return $stmt;
     }

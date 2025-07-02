@@ -9,21 +9,122 @@ use GraphQL\Type\Schema;
 use GraphQL\Type\SchemaConfig;
 use RuntimeException;
 use Throwable;
-use App\TypeDefinitions\CategoryType;
+use App\TypeDefinitions\TypesRegistry;
 use App\Model\CategoryModel;
+use App\Model\ProductModel;
+use App\TypeDefinitions\CategoryType;
+use App\TypeDefinitions\ProductType;
+use App\Service\Logger;
 
 class GraphQL {
     static public function handle() {
+        $logger = Logger::getInstance();
+
         try {
+            $logger->info('GraphQL request started');
+
+            // Initialize the type registry
+            //TypesRegistry::initialize();
+
             $queryType = new ObjectType([
                 'name' => 'Query',
                 'fields' => [
+                    'category' => [
+                        'type' => TypesRegistry::type(CategoryType::class),
+                        'description' => 'Get a category by ID',
+                        'args' => [
+                            'id' => [
+                                'type' => Type::nonNull(Type::string()),
+                                'description' => 'The category ID'
+                            ]
+                        ],
+                        'resolve' => static function ($rootValue, array $args) use ($logger) {
+                            $logger->info('Resolving category by ID', ['id' => $args['id']]);
+                            try {
+                                $categoryModel = new CategoryModel();
+                                $result = $categoryModel->get($args['id']);
+                                $logger->info('Category resolved successfully', ['id' => $args['id'], 'result' => $result]);
+                                return $result;
+                            } catch (\Exception $e) {
+                                $logger->error('Error resolving category', ['id' => $args['id'], 'error' => $e->getMessage()]);
+                                throw $e;
+                            }
+                        },
+                    ],
                     'categories' => [
-                        'type' => Type::listOf(new CategoryType()),
+                        'type' => Type::listOf(TypesRegistry::type(CategoryType::class)),
                         'description' => 'Get all categories',
-                        'resolve' => static function ($rootValue, array $args): array {
-                            $categoryModel = new CategoryModel();
-                            return $categoryModel->getAll();
+                        'resolve' => static function ($rootValue, array $args) use ($logger): array {
+                            $logger->info('Resolving all categories');
+                            try {
+                                $categoryModel = new CategoryModel();
+                                $categories = $categoryModel->getAll();
+                                $logger->info('Categories resolved successfully', ['count' => count($categories)]);
+                                return $categories;
+                            } catch (\Exception $e) {
+                                $logger->error('Error resolving categories', ['error' => $e->getMessage()]);
+                                throw $e;
+                            }
+                        },
+                    ],
+                    'products' => [
+                        'type' => Type::listOf(TypesRegistry::type(ProductType::class)),
+                        'description' => 'Get all products',
+                        'resolve' => static function ($rootValue, array $args) use ($logger): array {
+                            $logger->info('Resolving all products');
+                            try {
+                                $productModel = new ProductModel();
+                                $products = $productModel->getAll();
+                                $logger->info('Products resolved successfully', ['count' => count($products)]);
+                                return $products;
+                            } catch (\Exception $e) {
+                                $logger->error('Error resolving products', ['error' => $e->getMessage()]);
+                                throw $e;
+                            }
+                        },
+                    ],
+                    'product' => [
+                        'type' => TypesRegistry::type(ProductType::class),
+                        'description' => 'Get a product by ID',
+                        'args' => [
+                            'id' => [
+                                'type' => Type::nonNull(Type::string()),
+                                'description' => 'The product ID'
+                            ]
+                        ],
+                        'resolve' => static function ($rootValue, array $args) use ($logger) {
+                            $logger->info('Resolving product by ID', ['id' => $args['id']]);
+                            try {
+                                $productModel = new ProductModel();
+                                $result = $productModel->get($args['id']);
+                                $logger->info('Product resolved successfully', ['id' => $args['id']]);
+                                return $result;
+                            } catch (\Exception $e) {
+                                $logger->error('Error resolving product', ['id' => $args['id'], 'error' => $e->getMessage()]);
+                                throw $e;
+                            }
+                        },
+                    ],
+                    'productsByCategory' => [
+                        'type' => Type::listOf(TypesRegistry::type(ProductType::class)),
+                        'description' => 'Get products by category name',
+                        'args' => [
+                            'category' => [
+                                'type' => Type::nonNull(Type::string()),
+                                'description' => 'The category name'
+                            ]
+                        ],
+                        'resolve' => static function ($rootValue, array $args) use ($logger): array {
+                            $logger->info('Resolving products by category', ['category' => $args['category']]);
+                            try {
+                                $productModel = new ProductModel();
+                                $products = $productModel->getByCategory($args['category']);
+                                $logger->info('Products by category resolved successfully', ['category' => $args['category'], 'count' => count($products)]);
+                                return $products;
+                            } catch (\Exception $e) {
+                                $logger->error('Error resolving products by category', ['category' => $args['category'], 'error' => $e->getMessage()]);
+                                throw $e;
+                            }
                         },
                     ]
                 ],
@@ -60,10 +161,29 @@ class GraphQL {
             $query = $input['query'];
             $variableValues = $input['variables'] ?? null;
 
+            $logger->info('Executing GraphQL query', [
+                'query' => $query,
+                'variables' => $variableValues
+            ]);
+
             $rootValue = ['prefix' => 'You said: '];
             $result = GraphQLBase::executeQuery($schema, $query, $rootValue, null, $variableValues);
             $output = $result->toArray();
+
+            if (!empty($result->errors)) {
+                $logger->error('GraphQL execution errors', ['errors' => $result->errors]);
+            } else {
+                $logger->info('GraphQL query executed successfully');
+            }
+
         } catch (Throwable $e) {
+            $logger->error('GraphQL execution failed', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
             $output = [
                 'error' => [
                     'message' => $e->getMessage(),
