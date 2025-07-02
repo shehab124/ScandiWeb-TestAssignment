@@ -15,11 +15,11 @@ class CategoryType extends ObjectType
             'fields' => [
                 'id' => [
                     'type' => Type::nonNull(Type::id()),
-                    'description' => 'The unique identifier of the category',
+                    'description' => 'The unique identifier of the category'
                 ],
                 'name' => [
                     'type' => Type::nonNull(Type::string()),
-                    'description' => 'The name of the category',
+                    'description' => 'The name of the category'
                 ]
             ]
         ]);
