@@ -27,9 +27,17 @@
 }
 
 .navbarCenter {
-    position: absolute;
+    position: fixed;
     left: 50%;
     transform: translateX(-50%);
+}
+
+@media (max-width: 480px) {
+    .navbarCenter {
+        position: relative;
+        left: 0;
+        transform: none;
+    }
 }
 
 .navbarCart{

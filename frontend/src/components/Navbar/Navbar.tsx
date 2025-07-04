@@ -2,11 +2,12 @@ import styles from "./Navbar.module.css"
 import { useState, useCallback, useEffect } from "react";
 import Cart from "../CartDropDown/CartDropDown";
 import logo from "../../assets/logo.svg";
+import { Category } from "../../classes/Category";
 
 const Navbar = () => {
 
     const [cartOpen, setCartOpen] = useState<boolean>(false);
-    const [categories, setCategories] = useState<{id: string, name: string}[]>([]);
+    const [categories, setCategories] = useState<Category[]>([]);
 
     const fetchCategories = useCallback(async () => {
         try{
@@ -23,7 +24,6 @@ const Navbar = () => {
             const data = await response.json();
             console.log(data);
             setCategories(data.data.categories.map((category: {id: string, name: string}) => ({id: category.id, name: category.name.toUpperCase()})));
-            debugger;
         }
         catch(error) {
             console.error('Error fetching categories:', error);
