@@ -1,5 +1,17 @@
 version: '3'
 services:
+  frontend:
+    build: ./frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    depends_on:
+      - www
+    networks:
+      - app-network
+
   www:
     build: ./backend
     volumes:
@@ -11,8 +23,13 @@ services:
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - APP_ENV=${APP_ENV:-development}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:5173,http://localhost:3000,http://localhost}
     depends_on:
       - db
+    networks:
+      - app-network
+
   db:
     image: mysql:latest
     container_name: mysqlcontainer
@@ -24,6 +41,9 @@ services:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
     volumes:
       - ./db:/docker-entrypoint-initdb.d # sync seed data from host to container
+    networks:
+      - app-network
+
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     ports:
@@ -33,3 +53,9 @@ services:
       - PMA_PORT=3306
     depends_on:
       - db
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

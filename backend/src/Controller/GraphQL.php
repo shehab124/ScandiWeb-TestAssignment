@@ -23,9 +23,6 @@ class GraphQL {
         try {
             $logger->info('GraphQL request started');
 
-            // Initialize the type registry
-            //TypesRegistry::initialize();
-
             $queryType = new ObjectType([
                 'name' => 'Query',
                 'fields' => [
