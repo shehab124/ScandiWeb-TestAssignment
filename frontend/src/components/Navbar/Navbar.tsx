@@ -1,46 +1,32 @@
 import styles from "./Navbar.module.css"
-import { useState, useCallback, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Cart from "../CartDropDown/CartDropDown";
 import logo from "../../assets/logo.svg";
 import { Category } from "../../classes/Category";
+import { useQuery } from "@apollo/client";
+import { GET_CATEGORIES } from "../../GraphQL/Queries";
 
-const Navbar = () => {
+const Navbar = ({ selectedCategory, setSelectedCategory}: {selectedCategory: Category, setSelectedCategory: (category: Category) => void}) => {
 
+    const { data, error } = useQuery(GET_CATEGORIES);
     const [cartOpen, setCartOpen] = useState<boolean>(false);
     const [categories, setCategories] = useState<Category[]>([]);
 
-    const fetchCategories = useCallback(async () => {
-        try{
-            const response = await fetch('http://localhost/graphql', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({query: `{categories {id name}}`})
-            })
-            if (!response.ok) {
-                throw new Error('Failed to fetch categories');
-            }
-            const data = await response.json();
-            console.log(data);
-            setCategories(data.data.categories.map((category: {id: string, name: string}) => ({id: category.id, name: category.name.toUpperCase()})));
+    useEffect(() => {
+        if (data) {
+            setCategories(data.categories.map((category: {id: string, name: string}) => ({id: category.id, name: category.name.toUpperCase()})));
         }
-        catch(error) {
+        if (error) {
             console.error('Error fetching categories:', error);
         }
-    }, [])
+    }, [data, error])
 
-    useEffect(() => {
-        fetchCategories();
-    }, [fetchCategories])
-
-    console.log(categories);
 return (
     <nav className={styles.navbar}>
         <div className={styles.navbarContainer}>
             <div className={styles.categories}>
                 {categories.map((category: {id: string, name: string}) => (
-                    <span className={styles.category} key={category.id}>{category.name}</span>
+                    <span className={`${styles.category} ${category.id === selectedCategory.id ? styles.selectedCategory : ""}`} key={category.id} onClick={() => setSelectedCategory(category)}>{category.name}</span>
                 ))}
             </div>
             <div className={styles.navbarCenter}>
