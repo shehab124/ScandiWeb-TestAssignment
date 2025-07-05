@@ -1,11 +1,11 @@
-import styles from "./AllProducts.module.css"
+import styles from "./ProductList.module.css"
 import Card from "../Card/Card.tsx"
 import { useCallback, useEffect, useState } from "react";
-import { Product } from "../../classes/Product";
-import { Gallery } from "../../classes/Gallery";
-import { Price } from "../../classes/Price";
+import { Product } from "../../classes/Product.ts";
+import { Gallery } from "../../classes/Gallery.ts";
+import { Price } from "../../classes/Price.ts";
 
-const AllProducts = () => {
+const ProductList = () => {
 
     const [products, setProducts] = useState<Product[]>([]);
 
@@ -75,4 +75,4 @@ const AllProducts = () => {
     )
 }
 
-export default AllProducts;
+export default ProductList;

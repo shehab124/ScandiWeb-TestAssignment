@@ -1,7 +1,7 @@
 import './App.css'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Navbar from './components/Navbar/Navbar.tsx'
-import AllProducts from './components/AllProducts/AllProducts.tsx'
+import ProductList from './components/ProductList/ProductList.tsx'
 
 const App = () => {
   return (
@@ -10,7 +10,7 @@ const App = () => {
       <div className="App">
         <Router>
           <Routes>
-            <Route path="/" element={<AllProducts />} />
+            <Route path="/" element={<ProductList />} />
           </Routes>
         </Router>
       </div>
