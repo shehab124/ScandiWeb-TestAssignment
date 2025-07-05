@@ -50,6 +50,25 @@
 
 .category{
     padding: 1rem;
+    cursor: pointer;
+}
+
+.category:hover{
+    color: #10b981;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2.2em;
+    text-decoration-thickness: 0.2em;
+    text-decoration-color: #10b981;
+}
+
+.selectedCategory{
+    color: #10b981;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2.2em;
+    text-decoration-thickness: 0.2em;
+    text-decoration-color: #10b981;
 }
 
 .logo{
