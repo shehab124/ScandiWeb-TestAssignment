@@ -12,6 +12,8 @@ import {
 import { onError } from '@apollo/client/link/error'
 import { useState } from 'react';
 import { Category } from './classes/Category';
+import ProductDetails from './components/ProductDetails/ProductDetails.tsx';
+
 
 const errorLink = onError(({ graphQLErrors}) => {
   if (graphQLErrors) {
@@ -38,11 +40,12 @@ const App = () => {
 
   return (
       <ApolloProvider client={client}>
-      <Navbar selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory}/>
       <div className="App">
         <Router>
+          <Navbar selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory}/>
           <Routes>
             <Route path="/" element={<ProductList selectedCategory={selectedCategory}/>} />
+            <Route path="/product/:id" element={<ProductDetails />} />
           </Routes>
         </Router>
       </div>

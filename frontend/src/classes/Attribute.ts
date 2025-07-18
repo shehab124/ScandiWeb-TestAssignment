@@ -1,9 +1,9 @@
 export class Attribute {
     name: string;
     type: string;
-    values: string[] | null;
+    values: string[];
 
-    constructor(name: string, type: string, values: string[] | null) {
+    constructor(name: string, type: string, values: string[]) {
         this.name = name;
         this.type = type;
         this.values = values;
