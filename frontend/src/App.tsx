@@ -38,17 +38,41 @@ const client = new ApolloClient({
 
 const App = () => {
   const [selectedCategory, setSelectedCategory] = useState<Category>(new Category("1", "ALL"));
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
   return (
       <ApolloProvider client={client}>
         <CartProvider>
           <div className="App">
             <Router>
-              <Navbar selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory}/>
+              <Navbar
+                selectedCategory={selectedCategory}
+                setSelectedCategory={setSelectedCategory}
+                isCartOpen={isCartOpen}
+                setIsCartOpen={setIsCartOpen}
+              />
               <Routes>
                 <Route path="/" element={<ProductList selectedCategory={selectedCategory}/>} />
                 <Route path="/product/:id" element={<ProductDetails />} />
               </Routes>
+
+                            {/* Cart Overlay */}
+              {isCartOpen && (
+                <div
+                  className="cart-overlay"
+                  onClick={() => setIsCartOpen(false)}
+                  style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    width: '100vw',
+                    height: '100vh',
+                    background: 'rgba(0, 0, 0, 0.5)',
+                    zIndex: 500,
+                    pointerEvents: 'auto'
+                  }}
+                />
+              )}
             </Router>
           </div>
         </CartProvider>

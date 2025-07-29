@@ -7,7 +7,12 @@ import { useQuery } from "@apollo/client";
 import { GET_CATEGORIES } from "../../GraphQL/Queries";
 import { useNavigate } from "react-router-dom";
 
-const Navbar = ({ selectedCategory, setSelectedCategory}: {selectedCategory: Category, setSelectedCategory: (category: Category) => void}) => {
+const Navbar = ({ selectedCategory, setSelectedCategory, isCartOpen, setIsCartOpen}: {
+    selectedCategory: Category,
+    setSelectedCategory: (category: Category) => void,
+    isCartOpen?: boolean,
+    setIsCartOpen?: (isOpen: boolean) => void
+}) => {
 
     const { data, error } = useQuery(GET_CATEGORIES);
     const [cartOpen, setCartOpen] = useState<boolean>(false);
@@ -35,9 +40,15 @@ return (
                 <img src={logo} alt="logo" className={styles.logo} />
             </div>
             <div className={styles.navbarCart}>
-                <span className="cart-icon" onClick={() => setCartOpen((open) => !open)}
+                <span className="cart-icon" onClick={() => {
+                    if (setIsCartOpen) {
+                        setIsCartOpen(!isCartOpen);
+                    } else {
+                        setCartOpen((open) => !open);
+                    }
+                }}
                     style={{cursor: "pointer"}}>🛒</span>
-                {cartOpen && <Cart />}
+                {(isCartOpen || cartOpen) && <Cart />}
             </div>
         </div>
     </nav>
