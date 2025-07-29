@@ -4,11 +4,13 @@ import { GET_PRODUCT_BY_ID } from "../../GraphQL/Queries";
 import React, { useEffect, useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { Attribute } from "../../classes/Attribute";
+import parse from 'html-react-parser';
+import { useCart } from "react-use-cart";
 
 const ProductDetails = () => {
 
     const { id } = useParams();
-
+    const { addItem } = useCart();
 
     const [selectedAttributes, setSelectedAttributes] = useState<Map<string, string>>(new Map());
     const [currentPicture, setCurrentPicture] = useState<number>(1);
@@ -37,7 +39,11 @@ const ProductDetails = () => {
                     attribute.values.map((value: string) => {
                         buttonsJSX.push(
                                 <button
-                                    className={selectedAttributes.has(attribute.name) && selectedAttributes.get(attribute.name) === value ? styles.selectedColor : styles.colorButton}
+                                    className={selectedAttributes.has(attribute.name)
+                                        &&
+                                        selectedAttributes.get(attribute.name) === value ?
+                                        styles.selectedColor : styles.colorButton
+                                    }
                                     style={{ backgroundColor: value }}
                                     key={value}
                                     onClick={() => {
@@ -47,8 +53,7 @@ const ProductDetails = () => {
                                         selectedAttributes.has(attribute.name) &&
                                         selectedAttributes.get(attribute.name) === value
                                     }
-                                    >
-                                </button>
+                                    />
                         )
                     })
                     attributesJSX.push(<div className={styles.colorButtons}>{buttonsJSX}</div>);
@@ -77,9 +82,22 @@ const ProductDetails = () => {
                 }
             });
         }
-        console.log("attributesJSX::", attributesJSX);
         return attributesJSX;
     }, [data, selectedAttributes]);
+
+
+    const handleAddToCart = () => {
+
+        const attributesObject = Object.fromEntries(selectedAttributes);
+        addItem({
+            id: data.product.id,
+            price: data.product.price.amount,
+            name: data.product.name,
+            image: data.product.gallery[0].url,
+            selectedAttributes: attributesObject,
+            attributes: data.product.attributes
+        })
+    }
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error.message}</p>;
@@ -123,9 +141,14 @@ const ProductDetails = () => {
                 )}
                 <div className={styles.titles}>Price:</div>
                 <p className={styles.price}>{data.product.price.symbol}{data.product.price.amount}</p>
-                <button className={styles.addCartBtn}>Add to Cart</button>
-                <div className={styles.titles}>Description:</div>
-                <div className={styles.description} dangerouslySetInnerHTML={{ __html: data.product.description }} />
+                <button
+                    className={styles.addCartBtn}
+                    onClick={handleAddToCart}
+                    disabled={data.product.inStock === false}
+                    >
+                    Add to Cart
+                </button>
+                <div className={styles.description}>{parse(data.product.description)}</div>
             </div>
         </div>
     )

@@ -13,8 +13,10 @@ export class Product {
     price: Price;
     gallery: Gallery[];
     attributes: Attribute[];
+    selectedAttributes: Map<string, string>;
+    quantity: number;
 
-    constructor(id: string, name: string, inStock: boolean | null, description: string | null, brand: string | null, category: Category | null = null, price: Price, gallery: Gallery[], attributes: Attribute[]) {
+    constructor(id: string, name: string, inStock: boolean | null, description: string | null, brand: string | null, category: Category | null = null, price: Price, gallery: Gallery[], attributes: Attribute[], quantity: number) {
         this.id = id;
         this.name = name;
         this.inStock = inStock;
@@ -24,5 +26,7 @@ export class Product {
         this.price = price;
         this.gallery = gallery;
         this.attributes = attributes;
+        this.selectedAttributes = new Map();
+        this.quantity = quantity;
     }
 }

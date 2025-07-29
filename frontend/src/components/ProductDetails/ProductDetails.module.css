@@ -197,6 +197,11 @@
     background-color: var(--secondary-color);
 }
 
+.addCartBtn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
 @media (max-width: 1100px) {
     .mobileTitle {
         display: block;

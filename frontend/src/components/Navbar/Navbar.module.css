@@ -54,26 +54,26 @@
 }
 
 .category:hover{
-    color: #10b981;
+    color: var(--primary-color);
     font-weight: 600;
     text-decoration: underline;
     text-underline-offset: 2.2em;
     text-decoration-thickness: 0.2em;
-    text-decoration-color: #10b981;
+    text-decoration-color: var(--primary-color);
 }
 
 .selectedCategory{
-    color: #10b981;
+    color: var(--primary-color);
     font-weight: 600;
     text-decoration: underline;
     text-underline-offset: 2.2em;
     text-decoration-thickness: 0.2em;
-    text-decoration-color: #10b981;
+    text-decoration-color: var(--primary-color);
 }
 
 .logo{
     font-size: 2rem;
     font-weight: 600;
-    color: #10b981;
+    color: var(--primary-color);
     font-family: 'Roboto Condensed', sans-serif;
 }

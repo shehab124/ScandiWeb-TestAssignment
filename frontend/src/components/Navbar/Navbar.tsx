@@ -5,12 +5,14 @@ import logo from "../../assets/logo.svg";
 import { Category } from "../../classes/Category";
 import { useQuery } from "@apollo/client";
 import { GET_CATEGORIES } from "../../GraphQL/Queries";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = ({ selectedCategory, setSelectedCategory}: {selectedCategory: Category, setSelectedCategory: (category: Category) => void}) => {
 
     const { data, error } = useQuery(GET_CATEGORIES);
     const [cartOpen, setCartOpen] = useState<boolean>(false);
     const [categories, setCategories] = useState<Category[]>([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (data) {
@@ -26,7 +28,7 @@ return (
         <div className={styles.navbarContainer}>
             <div className={styles.categories}>
                 {categories.map((category: {id: string, name: string}) => (
-                    <span className={`${styles.category} ${category.id === selectedCategory.id ? styles.selectedCategory : ""}`} key={category.id} onClick={() => setSelectedCategory(category)}>{category.name}</span>
+                    <span className={`${styles.category} ${category.id === selectedCategory.id ? styles.selectedCategory : ""}`} key={category.id} onClick={() => {setSelectedCategory(category); navigate(`/?category=${category.id}`)}}>{category.name}</span>
                 ))}
             </div>
             <div className={styles.navbarCenter}>
