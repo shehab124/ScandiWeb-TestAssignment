@@ -3,7 +3,7 @@ import { useQuery } from "@apollo/client";
 import { GET_PRODUCT_BY_ID } from "../../GraphQL/Queries";
 import React, { useEffect, useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { Attribute } from "../../classes/Attribute";
+import type { Attribute } from "../../interfaces/Attribute";
 import parse from 'html-react-parser';
 import { useCart } from "react-use-cart";
 

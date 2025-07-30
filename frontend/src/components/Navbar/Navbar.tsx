@@ -2,10 +2,11 @@ import styles from "./Navbar.module.css"
 import { useState, useEffect } from "react";
 import Cart from "../CartDropDown/CartDropDown";
 import logo from "../../assets/logo.svg";
-import { Category } from "../../classes/Category";
+import type { Category } from "../../interfaces/Category";
 import { useQuery } from "@apollo/client";
 import { GET_CATEGORIES } from "../../GraphQL/Queries";
 import { useNavigate } from "react-router-dom";
+import cartIcon from "../../assets/cart.svg";
 
 const Navbar = ({ selectedCategory, setSelectedCategory, isCartOpen, setIsCartOpen}: {
     selectedCategory: Category,
@@ -47,7 +48,9 @@ return (
                         setCartOpen((open) => !open);
                     }
                 }}
-                    style={{cursor: "pointer"}}>🛒</span>
+                    style={{cursor: "pointer"}}>
+                        <img src={cartIcon} alt="cart" className={styles.cartIcon} />
+                    </span>
                 {(isCartOpen || cartOpen) && <Cart />}
             </div>
         </div>

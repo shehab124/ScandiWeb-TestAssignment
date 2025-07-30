@@ -1,12 +1,10 @@
 import styles from "./ProductList.module.css"
 import Card from "../Card/Card.tsx"
 import { useEffect, useState } from "react";
-import { Product } from "../../classes/Product.ts";
-import { Gallery } from "../../classes/Gallery.ts";
-import { Price } from "../../classes/Price.ts";
+import type { Product } from "../../interfaces/Product.ts";
+import type { Category } from "../../interfaces/Category.ts";
 import { useQuery } from "@apollo/client";
 import { GET_PRODUCTS_BY_CATEGORY } from "../../GraphQL/Queries";
-import { Category } from "../../classes/Category";
 
 const ProductList = ({selectedCategory}: {selectedCategory: Category}) => {
 
@@ -21,35 +19,26 @@ const ProductList = ({selectedCategory}: {selectedCategory: Category}) => {
         if(data)
         {
             setProducts(
-                data.productsByCategory.map((product: {
-                    id: string,
-                    name: string,
-                    inStock: boolean,
-                    price: {
-                        amount: number,
-                        symbol: string
-                    },
-                    gallery: {
-                        id: string,
-                        url: string,
-                        order: number
-                    }[]
-                }) => {
-                    const galleryItems = product.gallery.map(gallery =>
-                        new Gallery(gallery.id, gallery.url, gallery.order)
-                    );
+                data.productsByCategory.map((product: Product) => {
+                    const typedProduct: Product = {
+                        id: product.id,
+                        name: product.name,
+                        inStock: product.inStock,
+                        price: {
+                            amount: product.price.amount,
+                            symbol: product.price.symbol,
+                            currency: product.price.currency
+                        },
+                        gallery: product.gallery,
+                        description: null,
+                        brand: null,
+                        category: null,
+                        attributes: [],
+                        selectedAttributes: new Map(),
+                        quantity: 0
+                    };
 
-                    return new Product(
-                        product.id,
-                        product.name,
-                        product.inStock,
-                        null,
-                        null,
-                        null,
-                        new Price(product.price.amount, product.price.symbol, product.price.symbol),
-                        galleryItems,
-                        []
-                    );
+                    return typedProduct;
                 })
             );
         }

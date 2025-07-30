@@ -1,6 +1,6 @@
 import { useCart } from "react-use-cart";
 import styles from "./CartDropDown.module.css"
-import { Attribute } from "../../classes/Attribute";
+import type { Attribute } from "../../interfaces/Attribute";
 import { useState, useEffect } from "react";
 
 const Cart = () => {

@@ -1,5 +1,5 @@
 import styles from "./Card.module.css"
-import { Product } from "../../classes/Product";
+import type { Product } from "../../interfaces/Product";
 import { useNavigate } from "react-router-dom";
 
 const Card = ({product}: {product: Product}) => {

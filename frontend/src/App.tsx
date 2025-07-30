@@ -11,7 +11,7 @@ import {
   } from '@apollo/client'
 import { onError } from '@apollo/client/link/error'
 import { useState } from 'react';
-import { Category } from './classes/Category';
+import type { Category } from './interfaces/Category.ts';
 import ProductDetails from './components/ProductDetails/ProductDetails.tsx';
 import { CartProvider } from 'react-use-cart';
 
@@ -37,7 +37,7 @@ const client = new ApolloClient({
 })
 
 const App = () => {
-  const [selectedCategory, setSelectedCategory] = useState<Category>(new Category("1", "ALL"));
+  const [selectedCategory, setSelectedCategory] = useState<Category>({id: "1", name: "ALL"});
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   return (
