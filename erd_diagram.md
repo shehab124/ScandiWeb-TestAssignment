@@ -46,12 +46,37 @@ erDiagram
         int attribute_set_id FK
     }
 
+    Order {
+        int id PK
+        decimal total_cost
+        string currency_label
+        string currency_symbol
+        timestamp created_at
+    }
+
+    OrderItem {
+        int id PK
+        int order_id FK
+        string product_id FK
+        int quantity
+    }
+
+    AttributesOrderItem {
+        int id PK
+        int order_item_id FK
+        int attribute_id FK
+    }
+
     %% Relationships
     Category ||--o{ Product : "has"
     Product ||--o{ Price : "has"
     Product ||--o{ ProductGallery : "contains"
     Product ||--o{ AttributeSet : "has"
     AttributeSet ||--o{ Attribute : "contains"
+    Order ||--o{ OrderItem : "contains"
+    OrderItem ||--o{ AttributesOrderItem : "has"
+    Product ||--o{ OrderItem : "ordered_in"
+    Attribute ||--o{ AttributesOrderItem : "selected_in"
 ```
 
 ## Database Schema
@@ -124,6 +149,40 @@ CREATE TABLE attributes (
 );
 ```
 
+#### 7. orders
+```sql
+CREATE TABLE orders (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    total_cost DECIMAL(10,2) NOT NULL,
+    currency_label VARCHAR(3) NOT NULL,
+    currency_symbol VARCHAR(1) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+#### 8. order_items
+```sql
+CREATE TABLE order_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT,
+    product_id VARCHAR(100),
+    quantity INT NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+```
+
+#### 9. attributes_order_item
+```sql
+CREATE TABLE attributes_order_item (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    order_item_id INT,
+    attribute_id INT,
+    FOREIGN KEY (order_item_id) REFERENCES order_items(id) ON DELETE CASCADE,
+    FOREIGN KEY (attribute_id) REFERENCES attributes(id) ON DELETE CASCADE
+);
+```
+
 ## Key Features
 
 1. **String Product IDs**: Products now use VARCHAR(100) as primary key for flexibility
@@ -131,6 +190,9 @@ CREATE TABLE attributes (
 3. **Product-Specific Attributes**: Each product has its own attribute sets and values
 4. **Image Gallery**: Products can have multiple images with ordering
 5. **Category Management**: Simple category system with product categorization
+6. **Order Management**: Complete order tracking with items and selected attributes
+7. **Attribute History**: Tracks which specific attributes were selected for each order item
+8. **Audit Trail**: Orders include creation timestamps for tracking
 
 ## Sample Data Population
 
