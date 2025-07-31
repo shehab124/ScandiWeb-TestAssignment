@@ -12,9 +12,14 @@ use Throwable;
 use App\TypeDefinitions\TypesRegistry;
 use App\Model\CategoryModel;
 use App\Model\ProductModel;
+use App\Model\OrderModel;
 use App\TypeDefinitions\CategoryType;
 use App\TypeDefinitions\ProductType;
+use App\TypeDefinitions\OrderItemInputType;
+use App\TypeDefinitions\OrderItemAttributeInputType;
+use App\TypeDefinitions\OrderResponseType;
 use App\Service\Logger;
+use App\Service\OrderService;
 
 class GraphQL {
     static public function handle() {
@@ -130,13 +135,32 @@ class GraphQL {
             $mutationType = new ObjectType([
                 'name' => 'Mutation',
                 'fields' => [
-                    'sum' => [
-                        'type' => Type::int(),
+                    'createOrder' => [
+                        'type' => TypesRegistry::type(OrderResponseType::class),
+                        'description' => 'Create a new order',
                         'args' => [
-                            'x' => ['type' => Type::int()],
-                            'y' => ['type' => Type::int()],
+                            'items' => ['type' => Type::nonNull(Type::listOf(TypesRegistry::type(OrderItemInputType::class)))],
+                            'total_cost' => ['type' => Type::nonNull(Type::float())],
+                            'currency_label' => ['type' => Type::nonNull(Type::string())],
+                            'currency_symbol' => ['type' => Type::nonNull(Type::string())],
+                            'attributes' => ['type' => Type::listOf(TypesRegistry::type(OrderItemAttributeInputType::class))]
                         ],
-                        'resolve' => static fn ($calc, array $args): int => $args['x'] + $args['y'],
+                        'resolve' => static function ($rootValue, array $args) use ($logger): array {
+                            $logger->info('Creating new order', ['items_count' => count($args['items'])]);
+                            try {
+                                $orderService = new OrderService();
+                                $orderId = $orderService->createOrder($args);
+                                $logger->info('Order created successfully', ['id' => $orderId]);
+                                return [
+                                    'order_id' => $orderId,
+                                    'status' => $orderId > 0 ? 'success' : 'failed',
+                                    'total_cost' => $args['total_cost']
+                                ];
+                            } catch (\Exception $e) {
+                                $logger->error('Error creating order', ['error' => $e->getMessage()]);
+                                throw $e;
+                            }
+                        },
                     ],
                 ],
             ]);
