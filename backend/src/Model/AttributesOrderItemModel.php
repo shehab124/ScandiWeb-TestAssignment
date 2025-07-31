@@ -2,45 +2,13 @@
 
 namespace App\Model;
 
-use App\Database\QueryBuilder;
-
-class AttributesOrderItemModel implements ModelInterface
+class AttributesOrderItemModel extends BaseModel
 {
-    private QueryBuilder $queryBuilder;
+    protected string $table = 'attributes_order_item';
 
     public function __construct()
     {
-        $this->queryBuilder = new QueryBuilder();
-        $this->queryBuilder->from('attributes_order_item');
+        parent::__construct();
     }
 
-    public function get(string $id): array
-    {
-        return $this->queryBuilder->select('*')->andWhere('id', '=', $id)->get();
-    }
-
-    public function getAll(): array
-    {
-        return $this->queryBuilder->select('*')->get();
-    }
-
-    public function delete(string $id): int
-    {
-        return $this->queryBuilder->andWhere('id', '=', $id)->delete();
-    }
-
-    public function update(string $id, array $data): int
-    {
-        return $this->queryBuilder->andWhere('id', '=', $id)->update($data);
-    }
-
-    public function insert(array $data): int
-    {
-        return $this->queryBuilder->insert($data);
-    }
-
-    public function rawQuery(string $sql, array $data = []): array
-    {
-        return $this->queryBuilder->rawQuery($sql, $data);
-    }
 }

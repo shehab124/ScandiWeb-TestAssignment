@@ -2,68 +2,36 @@
 
 namespace App\Model;
 
-use App\Model\ModelInterface;
-use App\Database\QueryBuilder;
+use App\Model\BaseModel;
 
-class ProductGalleryModel implements ModelInterface
+class ProductGalleryModel extends BaseModel
 {
-    private QueryBuilder $qb;
+    protected string $table = 'product_gallery';
 
     public function __construct()
     {
-        $this->qb = new QueryBuilder();
+        parent::__construct();
     }
 
-    public function get(string $id)
+    public function getByProductId(string $productId): array
     {
         return $this->qb
-            ->from('product_gallery')
-            ->andWhere('id', '=', $id)
-            ->get();
-    }
-
-    public function getByProductId(string $productId)
-    {
-        return $this->qb
-            ->from('product_gallery')
             ->andWhere('product_id', '=', $productId)
             ->orderBy('display_order')
             ->getAll();
     }
 
-    public function getAll()
+    public function getAll(): array
     {
         return $this->qb
-            ->from('product_gallery')
             ->orderBy('display_order')
             ->getAll();
     }
 
-    public function delete(string $id)
+    public function update(string $id, array $data): int
     {
         return $this->qb
-            ->from('product_gallery')
-            ->andWhere('id', '=', $id)
-            ->delete();
-    }
-
-    public function update(string $id, array $data)
-    {
-        return $this->qb
-            ->from('product_gallery')
             ->andWhere('id', '=', $id)
             ->update($data);
-    }
-
-    public function insert(array $data)
-    {
-        return $this->qb
-            ->from('product_gallery')
-            ->insert($data);
-    }
-
-    public function rawQuery(string $sql, array $data = [])
-    {
-        return $this->qb->rawQuery($sql, $data);
     }
 }

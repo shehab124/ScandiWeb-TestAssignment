@@ -2,16 +2,15 @@
 
 namespace App\Model;
 
-use App\Model\ModelInterface;
-use App\Database\QueryBuilder;
+use App\Model\BaseModel;
 
-class ProductModel implements ModelInterface
+class ProductModel extends BaseModel
 {
-    private QueryBuilder $qb;
+    protected string $table = 'products';
 
     public function __construct()
     {
-        $this->qb = new QueryBuilder();
+        parent::__construct();
     }
 
     public function get(string $id): array
@@ -95,34 +94,5 @@ class ProductModel implements ModelInterface
         }
 
         return array_values($grouped);
-    }
-
-    public function delete(string $id): int
-    {
-        // Delete product (cascading will handle related data)
-        return $this->qb
-            ->from('products')
-            ->andWhere('id', '=', $id)
-            ->delete();
-    }
-
-    public function update(string $id, array $data): int
-    {
-        return $this->qb
-            ->from('products')
-            ->andWhere('id', '=', $id)
-            ->update($data);
-    }
-
-    public function insert(array $data): int
-    {
-        return $this->qb
-            ->from('products')
-            ->insert($data);
-    }
-
-    public function rawQuery(string $sql, array $data = []): array
-    {
-        return $this->qb->rawQuery($sql, $data);
     }
 }
