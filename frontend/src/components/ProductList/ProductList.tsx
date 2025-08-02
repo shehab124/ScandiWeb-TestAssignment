@@ -15,6 +15,11 @@ const ProductList = ({selectedCategory}: {selectedCategory: Category}) => {
         }
     });
 
+    const handleAddToCart = (e: React.MouseEvent, product: Product) => {
+        e.stopPropagation();
+        console.log(product);
+    }
+
     useEffect(() => {
         if(data)
         {
@@ -52,7 +57,7 @@ const ProductList = ({selectedCategory}: {selectedCategory: Category}) => {
             <h2 className={styles.title}>{selectedCategory ? selectedCategory.name : "All Products"}</h2>
             <div className={styles.products}>
                 {loading ? <p>Loading...</p> : products.map((product) => (
-                    <Card key={product.id} product={product} />
+                    <Card key={product.id} product={product} handleAddToCart={(e) => handleAddToCart(e, product)} />
                 ))}
             </div>
         </>
