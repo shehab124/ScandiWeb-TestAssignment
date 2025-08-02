@@ -7,6 +7,7 @@ import { useQuery } from "@apollo/client";
 import { GET_CATEGORIES } from "../../GraphQL/Queries";
 import { useNavigate } from "react-router-dom";
 import cartIcon from "../../assets/cart.svg";
+import { useCart } from "react-use-cart";
 
 const Navbar = ({ selectedCategory, setSelectedCategory, isCartOpen, setIsCartOpen}: {
     selectedCategory: Category,
@@ -19,6 +20,7 @@ const Navbar = ({ selectedCategory, setSelectedCategory, isCartOpen, setIsCartOp
     const [cartOpen, setCartOpen] = useState<boolean>(false);
     const [categories, setCategories] = useState<Category[]>([]);
     const navigate = useNavigate();
+    const { totalItems } = useCart();
 
     useEffect(() => {
         if (data) {
@@ -41,6 +43,7 @@ return (
                 <img src={logo} alt="logo" className={styles.logo} />
             </div>
             <div className={styles.navbarCart}>
+                {totalItems > 0 && <div className={styles.cartBubble}>{totalItems}</div>}
                 <span className="cart-icon" onClick={() => {
                     if (setIsCartOpen) {
                         setIsCartOpen(!isCartOpen);
