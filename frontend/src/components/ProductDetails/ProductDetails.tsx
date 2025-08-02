@@ -10,7 +10,7 @@ import { useCart } from "react-use-cart";
 const ProductDetails = () => {
 
     const { id } = useParams();
-    const { addItem } = useCart();
+    const { addItem, items, updateItemQuantity } = useCart();
 
     const [selectedAttributes, setSelectedAttributes] = useState<Map<string, string>>(new Map());
     const [currentPicture, setCurrentPicture] = useState<number>(1);
@@ -89,8 +89,22 @@ const ProductDetails = () => {
     const handleAddToCart = () => {
 
         const attributesObject = Object.fromEntries(selectedAttributes);
+
+        for(let i = 0; i < items.length; i++)
+        {
+            if(items[i].product_id === data.product.id)
+            {
+                if(JSON.stringify(items[i].selectedAttributes) === JSON.stringify(attributesObject))
+                {
+                    updateItemQuantity(items[i].id, (items[i].quantity || 0) + 1);
+                    return;
+                }
+            }
+        }
+
         addItem({
-            id: data.product.id,
+            id: (items.length + 1).toString(),
+            product_id: data.product.id,
             price: data.product.price.amount,
             name: data.product.name,
             image: data.product.gallery[0].url,
