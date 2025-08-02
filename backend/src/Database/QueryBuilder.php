@@ -142,7 +142,20 @@ class QueryBuilder {
         $this->dataArr = array_merge($this->dataArr, $data);
         $sql = $this->buildQuery('insert', $data);
         $this->query($sql);
-        return $this->pdo->lastInsertId();
+        $lastInsertId = $this->pdo->lastInsertId();
+
+
+        $this->dataArr = [];
+        $this->andWhere = [];
+        $this->orWhere = [];
+        $this->order = '';
+        $this->limit = '';
+        $this->offset = '';
+        $this->group = '';
+        $this->having = '';
+        $this->joins = [];
+
+        return $lastInsertId;
     }
 
     public function rawQuery(string $sql, array $data = []):array
@@ -213,7 +226,7 @@ class QueryBuilder {
 
     private function query(string $sql): PDOStatement|bool
     {
-        $this->logger->error('dataArray', [
+        $this->logger->info('dataArray', [
             'dataArray' => $this->dataArr
         ]);
         try{
@@ -226,9 +239,9 @@ class QueryBuilder {
             ]);
             $stmt->execute($this->dataArr);
         }
-        catch(Exception)
+        catch(Exception $e)
         {
-            $this->logger->error('Prepare Statment Fails!!!');
+            throw new Exception($e->getMessage());
         }
 
 
@@ -240,22 +253,6 @@ class QueryBuilder {
             'select' => $this->select
         ]);
 
-        $this->setDefaultValues();
         return $stmt;
-    }
-
-    private function setDefaultValues(): void
-    {
-        $this->select = '*';
-        $this->from = '';
-        $this->andWhere = [];
-        $this->orWhere = [];
-        $this->dataArr = [];
-        $this->order = '';
-        $this->limit = '';
-        $this->offset = '';
-        $this->group = '';
-        $this->having = '';
-        $this->joins = [];
     }
 }
