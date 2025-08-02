@@ -70,7 +70,7 @@ class ProductType extends ObjectType
                         return $galleryModel->getByProductId($product['id']);
                     }
                 ],
-                'attributes' => [
+                'attributeSets' => [
                     'type' => Type::listOf(TypesRegistry::type(AttributeSetType::class)),
                     'description' => 'The product attributes',
                     'resolve' => function($product) {
@@ -82,12 +82,12 @@ class ProductType extends ObjectType
 
                         foreach ($attributeSets as $set) {
                             $attributes = $attributeModel->getByAttributeSetId($set['id']);
-                            $values = array_column($attributes, 'display_value');
 
                             $grouped[] = [
+                                'id' => $set['id'],
                                 'name' => $set['name'],
                                 'type' => $set['type'],
-                                'values' => $values
+                                'attributes' => $attributes
                             ];
                         }
 

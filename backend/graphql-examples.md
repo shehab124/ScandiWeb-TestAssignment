@@ -164,3 +164,28 @@ For a product query, you should get:
 - **Full product queries** will execute multiple database queries
 - **Gallery and attributes** are only fetched when requested
 - **Category and price** are always included with the main product query
+
+
+
+
+mutation {
+  createOrder(
+    items: [
+      {
+        product_id: "imac-2021"
+        quantity: 4
+        attributes: [
+          { attribute_id: 23 }
+          { attribute_id: 25}
+        ]
+      }
+    ]
+    total_cost: 400
+    currency_label: "USD"
+    currency_symbol: "$"
+  ) {
+    order_id
+    status
+    total_cost
+  }
+}

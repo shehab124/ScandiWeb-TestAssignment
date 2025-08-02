@@ -52,6 +52,7 @@ export const GET_PRODUCT_BY_ID = gql`
             order
         }
         attributes {
+            id
             name
             type
             values
