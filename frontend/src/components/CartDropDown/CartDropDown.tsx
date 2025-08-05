@@ -1,82 +1,111 @@
 import { useCart } from "react-use-cart";
 import styles from "./CartDropDown.module.css"
 import type { Attribute } from "../../interfaces/Attribute";
-import { useState, useEffect } from "react";
+import type { AttributeSet } from "../../interfaces/AttributeSet";
+import { useMutation } from "@apollo/client";
+import { CREATE_ORDER } from "../../GraphQL/Mutations";
 
 const Cart = () => {
 
     const { isEmpty, totalUniqueItems, items, updateItemQuantity, removeItem, cartTotal, updateItem } = useCart();
-    const [cartItems, setCartItems] = useState(items);
 
-    // Update local state when cart items change
-    useEffect(() => {
-        setCartItems(items);
-    }, [items]);
+    const [createOrder] = useMutation(CREATE_ORDER);
 
-    const handleAttributeClick = (attribute: Attribute, value: string, itemId: string) => {
-        const updatedItems = cartItems.map(item => {
-            if (item.id === itemId) {
-                const updatedItem = {
-                    ...item,
-                    selectedAttributes: {
-                        ...item.selectedAttributes,
-                        [attribute.name]: value
+    const handleAttributeClick = (attribute: Attribute, value: string, itemId: string, attributeSetName: string) => {
+        debugger;
+        const item = items.find(item => item.id === itemId);
+        if (item) {
+            const updatedItem = {
+                ...item,
+                selectedAttributes: {
+                    ...item.selectedAttributes,
+                    [attributeSetName]: {
+                        id: attribute.id,
+                        name: attributeSetName,
+                        value: value
                     }
-                };
-                // Update the item in the cart
-                updateItem(itemId, updatedItem);
-                return updatedItem;
-            }
-            return item;
-        });
-        setCartItems(updatedItems);
+                }
+            };
+            // Update the item in the cart
+            updateItem(itemId, updatedItem);
+        }
     };
 
     const renderAttributes = (item: any) => {
         let attributesJSX: React.ReactElement[] = [];
-        if (item.attributes) {
-            item.attributes.map((attribute: Attribute) => {
-                attributesJSX.push(<div key={attribute.name} className={styles.attributeTitle}>{attribute.name}:</div>);
+        if (item.attributeSets) {
+            debugger;
+            item.attributeSets.forEach((attributeSet: AttributeSet) => {
+                attributesJSX.push(<div key={attributeSet.name} className={styles.attributeTitle}>{attributeSet.name}:</div>);
                 let buttonsJSX: React.ReactElement[] = [];
 
-                if (attribute.type === "swatch") {
-                    attribute.values.map((value: string) => {
+                if (attributeSet.type === "swatch") {
+                    attributeSet.attributes.forEach((attribute: Attribute) => {
                         buttonsJSX.push(
                             <button
-                                key={value}
+                                key={attribute.value}
                                 className={
-                                    item.selectedAttributes && item.selectedAttributes[attribute.name] === value ?
+                                    item.selectedAttributes && item.selectedAttributes[attributeSet.name].value === attribute.value ?
                                         styles.selectedColor : styles.colorButton
                                     }
-                                    style={{ backgroundColor: value }}
-                                    onClick={() => handleAttributeClick(attribute, value, item.id)}
-                                />
-                            )
-                        })
-                attributesJSX.push(<div className={styles.colorButtons}>{buttonsJSX}</div>);
+                                style={{ backgroundColor: attribute.value }}
+                                onClick={() => handleAttributeClick(attribute, attribute.value, item.id, attributeSet.name)}
+                            />
+                        );
+                    });
+                    attributesJSX.push(<div className={styles.colorButtons}>{buttonsJSX}</div>);
                 }
-                else if(attribute.type === "text")
-                {
-                    attribute.values.map((value: string) => {
+                else if(attributeSet.type === "text") {
+                    attributeSet.attributes.forEach((attribute: Attribute) => {
                         buttonsJSX.push(
                             <button
-                                key={value}
+                                key={attribute.value}
                                 className={
-                                    item.selectedAttributes && item.selectedAttributes[attribute.name] === value ?
+                                    item.selectedAttributes && item.selectedAttributes[attributeSet.name].value === attribute.value ?
                                         styles.selectedTextBtn : styles.textBtn
                                 }
-                                onClick={() => handleAttributeClick(attribute, value, item.id)}
+                                onClick={() => handleAttributeClick(attribute, attribute.value, item.id, attributeSet.name)}
                             >
-                                {value}
+                                {attribute.value}
                             </button>
-                        )
-                    })
+                        );
+                    });
                     attributesJSX.push(<div className={styles.textBtns}>{buttonsJSX}</div>);
                 }
-                })
-            }
+            });
+        }
 
             return attributesJSX;
+    }
+
+    const handleCheckout = async () => {
+        let orderItems = [];
+
+        for (const item of items) {
+            let attributes = [];
+            for (const attributeSet in item.selectedAttributes) {
+                attributes.push({
+                    attribute_id: parseInt(item.selectedAttributes[attributeSet].id)
+                });
+            }
+
+            orderItems.push({
+                product_id: item.product_id,
+                quantity: item.quantity,
+                attributes: attributes
+            });
+        }
+
+        let order = await createOrder({
+            variables: {
+                items: orderItems,
+                total_cost: cartTotal,
+                currency_label: "USD",
+                currency_symbol: "$"
+            }
+        });
+
+        console.log("ORDER: ", order);
     }
 
     return (
@@ -88,12 +117,12 @@ const Cart = () => {
             {!isEmpty && (
                 <>
                     <div className={styles.cartItems}>
-                        {cartItems.map((item) => (
+                        {items.map((item) => (
                             <div className={styles.cartItem} key={item.id}>
                                 <div className={styles.cartItemDetails}>
                                     <p className={styles.cartItemName}>{item.name}</p>
                                     <p className={styles.cartItemPrice}>${item.price}</p>
-                                    {item.attributes && (
+                                    {item.attributeSets && (
                                         <p className={styles.cartItemAttributes}>
                                             {renderAttributes(item)}
                                         </p>
@@ -131,7 +160,7 @@ const Cart = () => {
                         <span>${cartTotal.toFixed(2)}</span>
                     </div>
 
-                    <button className={styles.checkoutBtn}>
+                    <button className={styles.checkoutBtn} onClick={handleCheckout}>
                         Checkout
                     </button>
                 </>

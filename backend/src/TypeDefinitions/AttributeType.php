@@ -17,16 +17,15 @@ class AttributeType extends ObjectType
                     'type' => Type::nonNull(Type::int()),
                     'description' => 'Id of the attribute'
                 ],
-                'attributeSetId' => [
-                    'type' => Type::nonNull(Type::int()),
-                    'description' => 'Id of the attribute set'
-                ],
                 'displayValue' => [
-                    'type' => Type::nonNull(Type::string()),
-                    'description' => 'The display value of the attribute'
+                    'type' => Type::string(),
+                    'description' => 'The display value of the attribute',
+                    'resolve' => function ($attribute) {
+                        return $attribute['display_value'];
+                    }
                 ],
                 'value' => [
-                    'type' => Type::nonNull(Type::string()),
+                    'type' => Type::string(),
                     'description' => 'The value of the attribute'
                 ]
             ]

@@ -51,11 +51,15 @@ export const GET_PRODUCT_BY_ID = gql`
             url
             order
         }
-        attributes {
+        attributeSets {
             id
             name
             type
-            values
+            attributes {
+                id
+                displayValue
+                value
+            }
         }
         }
     }

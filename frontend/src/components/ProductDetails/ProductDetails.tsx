@@ -6,13 +6,15 @@ import { useParams } from "react-router-dom";
 import type { Attribute } from "../../interfaces/Attribute";
 import parse from 'html-react-parser';
 import { useCart } from "react-use-cart";
+import type { AttributeSet } from "../../interfaces/AttributeSet";
+import type { SelectedAttributes } from "../../interfaces/SelectedAttributes";
 
 const ProductDetails = () => {
 
     const { id } = useParams();
     const { addItem, items, updateItemQuantity } = useCart();
 
-    const [selectedAttributes, setSelectedAttributes] = useState<Map<string, string>>(new Map());
+    const [selectedAttributes, setSelectedAttributes] = useState<Map<string, SelectedAttributes>>(new Map());
     const [currentPicture, setCurrentPicture] = useState<number>(1);
 
     const { data, error, loading } = useQuery(GET_PRODUCT_BY_ID, {
@@ -23,7 +25,19 @@ const ProductDetails = () => {
 
     useEffect(() => {
         if (data) {
-            setSelectedAttributes(new Map(data.product.attributes.map((attribute: Attribute) => [attribute.name, attribute.values[0]])));
+            setSelectedAttributes(
+                new Map(
+                    data.product.attributeSets.map(
+                        (attributeSet: AttributeSet) =>
+                            [attributeSet.name, {
+                                    id: attributeSet.attributes[0].id,
+                                    value: attributeSet.attributes[0].value,
+                                    displayValue: attributeSet.attributes[0].displayValue
+                                }
+                            ]
+                    )
+                )
+            );
         }
     }, [data, error, loading]);
 
@@ -31,50 +45,58 @@ const ProductDetails = () => {
         let attributesJSX: React.ReactElement[] = [];
         if(data)
         {
-            data.product.attributes.map((attribute: Attribute) => {
-                attributesJSX.push(<div className={styles.attributeTitle}>{attribute.name}:</div>)
+            data.product.attributeSets.map((attributeSet: AttributeSet) => {
+                attributesJSX.push(<div className={styles.attributeTitle}>{attributeSet.name}:</div>)
                 let buttonsJSX : React.ReactElement[] = [];
-                if(attribute.type === "swatch")
+                if(attributeSet.type === "swatch")
                 {
-                    attribute.values.map((value: string) => {
+                    attributeSet.attributes.map((attribute: Attribute) => {
                         buttonsJSX.push(
                                 <button
-                                    className={selectedAttributes.has(attribute.name)
+                                    className={selectedAttributes.has(attributeSet.name)
                                         &&
-                                        selectedAttributes.get(attribute.name) === value ?
+                                        selectedAttributes.get(attributeSet.name)?.value === attribute.value ?
                                         styles.selectedColor : styles.colorButton
                                     }
-                                    style={{ backgroundColor: value }}
-                                    key={value}
+                                    style={{ backgroundColor: attribute.value }}
+                                    key={attribute.value}
                                     onClick={() => {
-                                        setSelectedAttributes(new Map(selectedAttributes.set(attribute.name, value)));
+                                        setSelectedAttributes(new Map(selectedAttributes.set(attributeSet.name,{
+                                            id: attribute.id.toString(),
+                                            name: attributeSet.name,
+                                            value: attribute.value
+                                        })));
                                     }}
                                     disabled={
-                                        selectedAttributes.has(attribute.name) &&
-                                        selectedAttributes.get(attribute.name) === value
+                                        selectedAttributes.has(attributeSet.name) &&
+                                        selectedAttributes.get(attributeSet.name)?.value === attribute.value
                                     }
                                     />
                         )
                     })
                     attributesJSX.push(<div className={styles.colorButtons}>{buttonsJSX}</div>);
                 }
-                else if(attribute.type === "text")
+                else if(attributeSet.type === "text")
                 {
-                    attribute.values.map((value: string) => {
+                    attributeSet.attributes.map((attribute: Attribute) => {
                         buttonsJSX.push(
                             <button
-                                className={selectedAttributes.has(attribute.name) &&
-                                    selectedAttributes.get(attribute.name) === value ?
+                                className={selectedAttributes.has(attributeSet.name) &&
+                                    selectedAttributes.get(attributeSet.name)?.value === attribute.value ?
                                     styles.selectedTextBtn :
                                     styles.textBtn
                                 }
-                                key={value}
+                                key={attribute.value}
                                 onClick={() => {
-                                    setSelectedAttributes(new Map(selectedAttributes.set(attribute.name, value)));
+                                    setSelectedAttributes(new Map(selectedAttributes.set(attributeSet.name,{
+                                        id: attribute.id.toString(),
+                                        name: attributeSet.name,
+                                        value: attribute.value
+                                    })));
                                 }}
-                                disabled={selectedAttributes.has(attribute.name) && selectedAttributes.get(attribute.name) === value}
+                                disabled={selectedAttributes.has(attributeSet.name) && selectedAttributes.get(attributeSet.name)?.value === attribute.value}
                             >
-                                {value}
+                                {attribute.value}
                             </button>
                         )
                     })
@@ -109,8 +131,9 @@ const ProductDetails = () => {
             name: data.product.name,
             image: data.product.gallery[0].url,
             selectedAttributes: attributesObject,
-            attributes: data.product.attributes
+            attributeSets: data.product.attributeSets
         })
+        debugger;
     }
 
     if (loading) return <p>Loading...</p>;
