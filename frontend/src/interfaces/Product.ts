@@ -1,7 +1,7 @@
 import type { Category } from "./Category";
 import type { Gallery } from "./Gallery";
 import type { Price } from "./Price";
-import type { Attribute } from "./Attribute";
+import type { AttributeSet } from "./AttributeSet";
 
 
 export interface Product {
@@ -13,7 +13,7 @@ export interface Product {
     category: Category | null;
     price: Price;
     gallery: Gallery[];
-    attributes: Attribute[];
+    attributeSets: AttributeSet[];
     selectedAttributes: Map<string, string>;
     quantity: number;
 }

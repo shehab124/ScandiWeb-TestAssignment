@@ -133,7 +133,6 @@ const ProductDetails = () => {
             selectedAttributes: attributesObject,
             attributeSets: data.product.attributeSets
         })
-        debugger;
     }
 
     if (loading) return <p>Loading...</p>;

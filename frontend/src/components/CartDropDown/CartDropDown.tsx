@@ -33,8 +33,8 @@ const Cart = () => {
 
     const renderAttributes = (item: any) => {
         let attributesJSX: React.ReactElement[] = [];
+        debugger;
         if (item.attributeSets) {
-            debugger;
             item.attributeSets.forEach((attributeSet: AttributeSet) => {
                 attributesJSX.push(<div key={attributeSet.name} className={styles.attributeTitle}>{attributeSet.name}:</div>);
                 let buttonsJSX: React.ReactElement[] = [];
@@ -45,7 +45,7 @@ const Cart = () => {
                             <button
                                 key={attribute.value}
                                 className={
-                                    item.selectedAttributes && item.selectedAttributes[attributeSet.name].value === attribute.value ?
+                                    item.selectedAttributes[attributeSet.name]?.value === attribute.value ?
                                         styles.selectedColor : styles.colorButton
                                     }
                                 style={{ backgroundColor: attribute.value }}
@@ -61,7 +61,7 @@ const Cart = () => {
                             <button
                                 key={attribute.value}
                                 className={
-                                    item.selectedAttributes && item.selectedAttributes[attributeSet.name].value === attribute.value ?
+                                    item.selectedAttributes[attributeSet.name]?.value === attribute.value ?
                                         styles.selectedTextBtn : styles.textBtn
                                 }
                                 onClick={() => handleAttributeClick(attribute, attribute.value, item.id, attributeSet.name)}

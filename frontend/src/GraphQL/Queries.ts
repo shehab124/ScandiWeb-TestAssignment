@@ -19,12 +19,23 @@ export const GET_PRODUCTS_BY_CATEGORY = gql`
         {
             amount
             symbol
+            currency
         }
         gallery
         {
             id
             url
             order
+        }
+        attributeSets {
+            id
+            name
+            type
+            attributes {
+                id
+                displayValue
+                value
+            }
         }
     }
 }

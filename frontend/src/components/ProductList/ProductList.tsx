@@ -5,10 +5,13 @@ import type { Product } from "../../interfaces/Product.ts";
 import type { Category } from "../../interfaces/Category.ts";
 import { useQuery } from "@apollo/client";
 import { GET_PRODUCTS_BY_CATEGORY } from "../../GraphQL/Queries";
+import { useCart } from "react-use-cart";
 
 const ProductList = ({selectedCategory}: {selectedCategory: Category}) => {
 
     const [products, setProducts] = useState<Product[]>([]);
+    const { addItem} = useCart();
+
     const { data, error, loading } = useQuery(GET_PRODUCTS_BY_CATEGORY, {
         variables: {
             category: selectedCategory.name
@@ -17,7 +20,17 @@ const ProductList = ({selectedCategory}: {selectedCategory: Category}) => {
 
     const handleAddToCart = (e: React.MouseEvent, product: Product) => {
         e.stopPropagation();
-        console.log(product);
+        debugger;
+        addItem({
+            id: product.id,
+            product_id: product.id,
+            name: product.name,
+            price: product.price.amount,
+            image: product.gallery[0].url,
+            selectedAttributes: new Map(),
+            attributeSets: product.attributeSets,
+            quantity: 1
+        });
     }
 
     useEffect(() => {
@@ -38,7 +51,7 @@ const ProductList = ({selectedCategory}: {selectedCategory: Category}) => {
                         description: null,
                         brand: null,
                         category: null,
-                        attributes: [],
+                        attributeSets: product.attributeSets,
                         selectedAttributes: new Map(),
                         quantity: 0
                     };
