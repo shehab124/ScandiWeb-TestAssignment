@@ -4,15 +4,17 @@ import type { Attribute } from "../../interfaces/Attribute";
 import type { AttributeSet } from "../../interfaces/AttributeSet";
 import { useMutation } from "@apollo/client";
 import { CREATE_ORDER } from "../../GraphQL/Mutations";
+import { useState } from "react";
+import SnackBar from "../SnackBar/SnackBar";
 
 const Cart = () => {
 
     const { isEmpty, totalUniqueItems, items, updateItemQuantity, removeItem, cartTotal, updateItem } = useCart();
 
     const [createOrder] = useMutation(CREATE_ORDER);
+    const [snackBar, setSnackBar] = useState<{text: string, type: "success" | "error"} | null>(null);
 
     const handleAttributeClick = (attribute: Attribute, value: string, itemId: string, attributeSetName: string) => {
-        debugger;
         const item = items.find(item => item.id === itemId);
         if (item) {
             const updatedItem = {
@@ -33,7 +35,6 @@ const Cart = () => {
 
     const renderAttributes = (item: any) => {
         let attributesJSX: React.ReactElement[] = [];
-        debugger;
         if (item.attributeSets) {
             item.attributeSets.forEach((attributeSet: AttributeSet) => {
                 attributesJSX.push(<div key={attributeSet.name} className={styles.attributeTitle}>{attributeSet.name}:</div>);
@@ -105,7 +106,17 @@ const Cart = () => {
             }
         });
 
-        console.log("ORDER: ", order);
+        if (order.data.createOrder.status === "success") {
+            setSnackBar({
+                text: "Order placed successfully",
+                type: "success"
+            });
+        } else {
+            setSnackBar({
+                text: "Order failed",
+                type: "error"
+            });
+        }
     }
 
     return (
@@ -165,6 +176,8 @@ const Cart = () => {
                     </button>
                 </>
             )}
+
+            {snackBar && <SnackBar text={snackBar.text} type={snackBar.type} />}
         </div>
     )
 }

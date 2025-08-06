@@ -8,11 +8,14 @@ import parse from 'html-react-parser';
 import { useCart } from "react-use-cart";
 import type { AttributeSet } from "../../interfaces/AttributeSet";
 import type { SelectedAttributes } from "../../interfaces/SelectedAttributes";
+import SnackBar from "../SnackBar/SnackBar";
 
 const ProductDetails = () => {
 
     const { id } = useParams();
     const { addItem, items, updateItemQuantity } = useCart();
+    const [snackBar, setSnackBar] = useState<{text: string, type: "success" | "error"} | null>(null);
+
 
     const [selectedAttributes, setSelectedAttributes] = useState<Map<string, SelectedAttributes>>(new Map());
     const [currentPicture, setCurrentPicture] = useState<number>(1);
@@ -133,6 +136,11 @@ const ProductDetails = () => {
             selectedAttributes: attributesObject,
             attributeSets: data.product.attributeSets
         })
+
+        setSnackBar({
+            text: "Product added to cart",
+            type: "success"
+        });
     }
 
     if (loading) return <p>Loading...</p>;
@@ -186,6 +194,7 @@ const ProductDetails = () => {
                 </button>
                 <div className={styles.description}>{parse(data.product.description)}</div>
             </div>
+            {snackBar && <SnackBar text={snackBar.text} type={snackBar.type} />}
         </div>
     )
 };

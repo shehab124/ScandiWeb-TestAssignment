@@ -6,10 +6,13 @@ import type { Category } from "../../interfaces/Category.ts";
 import { useQuery } from "@apollo/client";
 import { GET_PRODUCTS_BY_CATEGORY } from "../../GraphQL/Queries";
 import { useCart } from "react-use-cart";
+import SnackBar from "../SnackBar/SnackBar";
 
 const ProductList = ({selectedCategory}: {selectedCategory: Category}) => {
 
     const [products, setProducts] = useState<Product[]>([]);
+    const [snackBar, setSnackBar] = useState<{text: string, type: "success" | "error"} | null>(null);
+
     const { addItem} = useCart();
 
     const { data, error, loading } = useQuery(GET_PRODUCTS_BY_CATEGORY, {
@@ -20,7 +23,6 @@ const ProductList = ({selectedCategory}: {selectedCategory: Category}) => {
 
     const handleAddToCart = (e: React.MouseEvent, product: Product) => {
         e.stopPropagation();
-        debugger;
         addItem({
             id: product.id,
             product_id: product.id,
@@ -30,6 +32,11 @@ const ProductList = ({selectedCategory}: {selectedCategory: Category}) => {
             selectedAttributes: new Map(),
             attributeSets: product.attributeSets,
             quantity: 1
+        });
+
+        setSnackBar({
+            text: "Product added to cart",
+            type: "success"
         });
     }
 
@@ -73,6 +80,7 @@ const ProductList = ({selectedCategory}: {selectedCategory: Category}) => {
                     <Card key={product.id} product={product} handleAddToCart={(e) => handleAddToCart(e, product)} />
                 ))}
             </div>
+            {snackBar && <SnackBar text={snackBar.text} type={snackBar.type} />}
         </>
     )
 }
