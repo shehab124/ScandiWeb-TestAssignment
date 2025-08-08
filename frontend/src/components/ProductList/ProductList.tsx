@@ -93,7 +93,6 @@ const ProductList = ({selectedCategory}: {selectedCategory: Category}) => {
                         key={product.id}
                         product={product}
                         handleAddToCart={(e) => handleAddToCart(e, product)}
-                        data-testid={`product-${product.name.toLowerCase().replace(/\s+/g, '-')}`}
                         />
                 ))}
             </div>

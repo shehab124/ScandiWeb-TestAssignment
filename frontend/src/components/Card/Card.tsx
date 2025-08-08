@@ -11,7 +11,11 @@ const Card = (
     const navigate = useNavigate();
 
     return (
-        <div className={styles.card} onClick={() => navigate(`/product/${product.id}`)}>
+        <div
+            className={styles.card}
+            onClick={() => navigate(`/product/${product.id}`)}
+            data-testid={`product-${product.name.toLowerCase().replace(/\s+/g, '-')}`}
+        >
             <div className={product.inStock ? styles.imageWrapper : styles.imageWrapperNotInStock}>
                 {!product.inStock && <div className={styles.outOfStock}>OUT OF STOCK</div>}
                 <img src={product.gallery[0].url} alt={product.name} />
