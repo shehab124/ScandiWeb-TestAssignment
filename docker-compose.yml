@@ -1,52 +1,50 @@
 services:
   frontend:
     build: ./frontend
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
     ports:
-      - "5173:5173"
+      - "80:8080"
     depends_on:
       - backend
     networks:
       - app-network
+    restart: unless-stopped
 
   backend:
     build: ./backend
-    volumes:
-      - ./backend/:/var/www/html # Mount the backend directory to the container
     ports:
-      - 80:80 # Map port 80 to port 80 on the host
+      - "8000:80"
     environment:
       - MYSQL_HOST=${MYSQL_HOST}
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - APP_ENV=${APP_ENV:-development}
-      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:5173,http://localhost:3000,http://localhost}
+      - APP_ENV=production
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost,http://your-domain.com}
     depends_on:
       - db
     networks:
       - app-network
+    restart: unless-stopped
 
   db:
-    image: mysql:latest
-    container_name: mysqlcontainer
+    image: mysql:8.0
+    container_name: scandiweb_mysql
     environment:
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - MYSQL_ALLOW_EMPTY_PASSWORD=1
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
     volumes:
-      - ./db:/docker-entrypoint-initdb.d # sync seed data from host to container
+      - mysql_data:/var/lib/mysql
+      - ./db:/docker-entrypoint-initdb.d
     networks:
       - app-network
+    restart: unless-stopped
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     ports:
-      - 8001:80
+      - "8001:80"
     environment:
       - PMA_HOST=db
       - PMA_PORT=3306
@@ -54,6 +52,10 @@ services:
       - db
     networks:
       - app-network
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
 
 networks:
   app-network:
