@@ -27,7 +27,7 @@ const errorLink = onError(({ graphQLErrors}) => {
 const link = from([
   errorLink,
   new HttpLink({
-    uri: 'http://localhost/graphql',
+    uri: import.meta.env.VITE_GRAPHQL_URI,
   })
 ])
 
@@ -37,7 +37,7 @@ const client = new ApolloClient({
 })
 
 const App = () => {
-  const [selectedCategory, setSelectedCategory] = useState<Category>({id: "1", name: "all"});
+  const [selectedCategory, setSelectedCategory] = useState<Category>({id: "1", name: "ALL"});
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   return (
@@ -57,7 +57,7 @@ const App = () => {
                 <Route path="/product/:id" element={<ProductDetails />} />
               </Routes>
 
-                            {/* Cart Overlay */}
+              {/* Cart Overlay */}
               {isCartOpen && (
                 <div
                   className="cart-overlay"

@@ -6,6 +6,8 @@ services:
       - /app/node_modules
     ports:
       - "5173:5173"
+    environment:
+      - VITE_GRAPHQL_URI=${VITE_GRAPHQL_URI}
     depends_on:
       - backend
     networks:
