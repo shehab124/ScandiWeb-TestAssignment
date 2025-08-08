@@ -27,7 +27,7 @@ const errorLink = onError(({ graphQLErrors}) => {
 const link = from([
   errorLink,
   new HttpLink({
-    uri: import.meta.env.BACKEND_URL,
+    uri: import.meta.env.VITE_GRAPHQL_URI,
   })
 ])
 
@@ -57,7 +57,7 @@ const App = () => {
                 <Route path="/product/:id" element={<ProductDetails />} />
               </Routes>
 
-                            {/* Cart Overlay */}
+              {/* Cart Overlay */}
               {isCartOpen && (
                 <div
                   className="cart-overlay"
