@@ -1,5 +1,5 @@
 import './App.css'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import Navbar from './components/Navbar/Navbar.tsx'
 import ProductList from './components/ProductList/ProductList.tsx'
 import {
@@ -37,7 +37,7 @@ const client = new ApolloClient({
 })
 
 const App = () => {
-  const [selectedCategory, setSelectedCategory] = useState<Category>({id: "1", name: "ALL"});
+  const [selectedCategory, setSelectedCategory] = useState<Category>({id: "1", name: "all"});
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   return (
@@ -52,6 +52,7 @@ const App = () => {
                 setIsCartOpen={setIsCartOpen}
               />
               <Routes>
+                <Route path="/" element={<Navigate to="/all" replace />} />
                 <Route path={`/${selectedCategory.name}`} element={<ProductList selectedCategory={selectedCategory}/>} />
                 <Route path="/product/:id" element={<ProductDetails />} />
               </Routes>
