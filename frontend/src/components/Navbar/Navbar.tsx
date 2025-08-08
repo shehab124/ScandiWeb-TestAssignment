@@ -36,7 +36,19 @@ return (
         <div className={styles.navbarContainer}>
             <div className={styles.categories}>
                 {categories.map((category: {id: string, name: string}) => (
-                    <span className={`${styles.category} ${category.id === selectedCategory.id ? styles.selectedCategory : ""}`} key={category.id} onClick={() => {setSelectedCategory(category); navigate(`/?category=${category.id}`)}}>{category.name}</span>
+                    <span
+                        className={`${styles.category}
+                            ${category.id === selectedCategory.id ? styles.selectedCategory : ""}`}
+                            key={category.id}
+                            data-testid={`${category.id === selectedCategory.id ?
+                                "active-category-link" : "category-link"}`}
+                            onClick={() => {
+                                setSelectedCategory(category);
+                                navigate(`/?category=${category.id}`)
+                            }}
+                    >
+                        {category.name}
+                    </span>
                 ))}
             </div>
             <div className={styles.navbarCenter}>
@@ -44,7 +56,7 @@ return (
             </div>
             <div className={styles.navbarCart}>
                 {totalItems > 0 && <div className={styles.cartBubble}>{totalItems}</div>}
-                <span className="cart-icon" onClick={() => {
+                <span className="cart-icon" data-testid='cart-btn' onClick={() => {
                     if (setIsCartOpen) {
                         setIsCartOpen(!isCartOpen);
                     } else {

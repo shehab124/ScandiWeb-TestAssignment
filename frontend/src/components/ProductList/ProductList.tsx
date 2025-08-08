@@ -7,6 +7,7 @@ import { useQuery } from "@apollo/client";
 import { GET_PRODUCTS_BY_CATEGORY } from "../../GraphQL/Queries";
 import { useCart } from "react-use-cart";
 import SnackBar from "../SnackBar/SnackBar";
+import type { AttributeSet } from "../../interfaces/AttributeSet.ts";
 
 const ProductList = ({selectedCategory}: {selectedCategory: Category}) => {
 
@@ -23,13 +24,24 @@ const ProductList = ({selectedCategory}: {selectedCategory: Category}) => {
 
     const handleAddToCart = (e: React.MouseEvent, product: Product) => {
         e.stopPropagation();
+
+        const selectedAttributes = product.attributeSets.map(
+            (attributeSet: AttributeSet) =>
+                [attributeSet.name, {
+                        id: attributeSet.attributes[0].id,
+                        value: attributeSet.attributes[0].value,
+                        displayValue: attributeSet.attributes[0].displayValue
+                    }
+                ]
+        )
+        const attributesObject = Object.fromEntries(selectedAttributes);
         addItem({
             id: product.id,
             product_id: product.id,
             name: product.name,
             price: product.price.amount,
             image: product.gallery[0].url,
-            selectedAttributes: new Map(),
+            selectedAttributes: attributesObject,
             attributeSets: product.attributeSets,
             quantity: 1
         });
@@ -77,7 +89,12 @@ const ProductList = ({selectedCategory}: {selectedCategory: Category}) => {
             <h2 className={styles.title}>{selectedCategory ? selectedCategory.name : "All Products"}</h2>
             <div className={styles.products}>
                 {loading ? <p>Loading...</p> : products.map((product) => (
-                    <Card key={product.id} product={product} handleAddToCart={(e) => handleAddToCart(e, product)} />
+                    <Card
+                        key={product.id}
+                        product={product}
+                        handleAddToCart={(e) => handleAddToCart(e, product)}
+                        data-testid={`product-${product.name.toLowerCase().replace(/\s+/g, '-')}`}
+                        />
                 ))}
             </div>
             {snackBar && <SnackBar text={snackBar.text} type={snackBar.type} />}

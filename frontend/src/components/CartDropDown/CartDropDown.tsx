@@ -9,7 +9,7 @@ import SnackBar from "../SnackBar/SnackBar";
 
 const Cart = () => {
 
-    const { isEmpty, totalUniqueItems, items, updateItemQuantity, removeItem, cartTotal, updateItem } = useCart();
+    const { isEmpty, totalUniqueItems, items, updateItemQuantity, removeItem, cartTotal, updateItem, emptyCart } = useCart();
 
     const [createOrder] = useMutation(CREATE_ORDER);
     const [snackBar, setSnackBar] = useState<{text: string, type: "success" | "error"} | null>(null);
@@ -37,46 +37,62 @@ const Cart = () => {
         let attributesJSX: React.ReactElement[] = [];
         if (item.attributeSets) {
             item.attributeSets.forEach((attributeSet: AttributeSet) => {
-                attributesJSX.push(<div key={attributeSet.name} className={styles.attributeTitle}>{attributeSet.name}:</div>);
+                const attributeSetNameKebab = attributeSet.name.toLowerCase().replace(/\s+/g, '-');
+
+                attributesJSX.push(<div
+                                    key={attributeSet.name}
+                                    className={styles.attributeTitle}>{attributeSet.name}:</div>);
                 let buttonsJSX: React.ReactElement[] = [];
 
                 if (attributeSet.type === "swatch") {
                     attributeSet.attributes.forEach((attribute: Attribute) => {
+                        const isSelected = item.selectedAttributes[attributeSet.name]?.value === attribute.value;
+                        const attributeValueKebab = attribute.value.toLowerCase().replace(/\s+/g, '-');
+                        const testId = isSelected
+                            ? `cart-item-attribute-${attributeSetNameKebab}-${attributeValueKebab}-selected`
+                            : `cart-item-attribute-${attributeSetNameKebab}-${attributeValueKebab}`;
+
                         buttonsJSX.push(
                             <button
                                 key={attribute.value}
                                 className={
-                                    item.selectedAttributes[attributeSet.name]?.value === attribute.value ?
-                                        styles.selectedColor : styles.colorButton
-                                    }
+                                    isSelected ? styles.selectedColor : styles.colorButton
+                                }
                                 style={{ backgroundColor: attribute.value }}
                                 onClick={() => handleAttributeClick(attribute, attribute.value, item.id, attributeSet.name)}
+                                data-testid={testId}
                             />
                         );
                     });
-                    attributesJSX.push(<div className={styles.colorButtons}>{buttonsJSX}</div>);
+                    attributesJSX.push(<div className={styles.colorButtons} data-testid={`cart-item-attribute-${attributeSetNameKebab}`}>{buttonsJSX}</div>);
                 }
                 else if(attributeSet.type === "text") {
                     attributeSet.attributes.forEach((attribute: Attribute) => {
+                        const isSelected = item.selectedAttributes[attributeSet.name]?.value === attribute.value;
+                        const attributeValueKebab = attribute.value.toLowerCase().replace(/\s+/g, '-');
+                        const testId = isSelected
+                            ? `cart-item-attribute-${attributeSetNameKebab}-${attributeValueKebab}-selected`
+                            : `cart-item-attribute-${attributeSetNameKebab}-${attributeValueKebab}`;
+
                         buttonsJSX.push(
                             <button
                                 key={attribute.value}
                                 className={
-                                    item.selectedAttributes[attributeSet.name]?.value === attribute.value ?
-                                        styles.selectedTextBtn : styles.textBtn
+                                    isSelected ? styles.selectedTextBtn : styles.textBtn
                                 }
                                 onClick={() => handleAttributeClick(attribute, attribute.value, item.id, attributeSet.name)}
+                                data-testid={testId}
                             >
                                 {attribute.value}
                             </button>
                         );
                     });
-                    attributesJSX.push(<div className={styles.textBtns}>{buttonsJSX}</div>);
+                    attributesJSX.push(<div className={styles.textBtns} data-testid={`cart-item-attribute-${attributeSetNameKebab}`}>{buttonsJSX}</div>);
                 }
             });
         }
 
-            return attributesJSX;
+        return attributesJSX;
     }
 
     const handleCheckout = async () => {
@@ -111,12 +127,15 @@ const Cart = () => {
                 text: "Order placed successfully",
                 type: "success"
             });
+            emptyCart();
         } else {
             setSnackBar({
                 text: "Order failed",
                 type: "error"
             });
         }
+
+
     }
 
     return (
@@ -126,7 +145,6 @@ const Cart = () => {
             {isEmpty && <div className={styles.cartEmpty}>Your cart is empty</div>}
 
             {!isEmpty && (
-                <>
                     <div className={styles.cartItems}>
                         {items.map((item) => (
                             <div className={styles.cartItem} key={item.id}>
@@ -143,10 +161,16 @@ const Cart = () => {
                                     <button
                                         className={styles.quantityBtn}
                                         onClick={() => updateItemQuantity(item.id, (item.quantity || 1) + 1)}
+                                        data-testid='cart-item-amount-increase'
                                     >
                                         +
                                     </button>
-                                    <span className={styles.quantityDisplay}>{item.quantity || 1}</span>
+                                    <span
+                                        className={styles.quantityDisplay}
+                                        data-testid='cart-item-amount'
+                                    >
+                                        {item.quantity || 1}
+                                    </span>
                                     <button
                                         className={styles.quantityBtn}
                                         onClick={() => {
@@ -157,6 +181,7 @@ const Cart = () => {
                                                 updateItemQuantity(item.id, newQuantity);
                                             }
                                         }}
+                                        data-testid='cart-item-amount-decrease'
                                     >
                                         -
                                     </button>
@@ -165,17 +190,18 @@ const Cart = () => {
                             </div>
                         ))}
                     </div>
-
-                    <div className={styles.cartTotalRow}>
-                        <span>Total:</span>
-                        <span>${cartTotal.toFixed(2)}</span>
-                    </div>
-
-                    <button className={styles.checkoutBtn} onClick={handleCheckout}>
-                        Checkout
-                    </button>
-                </>
             )}
+            <div className={styles.cartTotalRow}>
+                <span>Total:</span>
+                $<span data-testid='cart-total'>{cartTotal.toFixed(2)}</span>
+            </div>
+            <button className={styles.checkoutBtn}
+                    disabled={isEmpty}
+                    data-testid='checkout-btn'
+                    onClick={handleCheckout}
+            >
+                Checkout
+            </button>
 
             {snackBar && <SnackBar text={snackBar.text} type={snackBar.type} />}
         </div>

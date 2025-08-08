@@ -1,7 +1,7 @@
 import styles from "./ProductDetails.module.css";
 import { useQuery } from "@apollo/client";
 import { GET_PRODUCT_BY_ID } from "../../GraphQL/Queries";
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import type { Attribute } from "../../interfaces/Attribute";
 import parse from 'html-react-parser';
@@ -26,23 +26,15 @@ const ProductDetails = () => {
         }
     });
 
-    useEffect(() => {
-        if (data) {
-            setSelectedAttributes(
-                new Map(
-                    data.product.attributeSets.map(
-                        (attributeSet: AttributeSet) =>
-                            [attributeSet.name, {
-                                    id: attributeSet.attributes[0].id,
-                                    value: attributeSet.attributes[0].value,
-                                    displayValue: attributeSet.attributes[0].displayValue
-                                }
-                            ]
-                    )
-                )
-            );
+    const isAttributesSelected = () => {
+        if(data)
+        {
+            if(selectedAttributes.size === data.product.attributeSets.length)
+                return true;
+            else
+                return false;
         }
-    }, [data, error, loading]);
+    }
 
     const renderAttributes = useMemo(() => {
         let attributesJSX: React.ReactElement[] = [];
@@ -77,7 +69,13 @@ const ProductDetails = () => {
                                     />
                         )
                     })
-                    attributesJSX.push(<div className={styles.colorButtons}>{buttonsJSX}</div>);
+                    attributesJSX.push(
+                    <div
+                        className={styles.colorButtons}
+                        data-testid={`product-attribute-${attributeSet.name}`}>
+                            {buttonsJSX}
+                    </div>
+                    );
                 }
                 else if(attributeSet.type === "text")
                 {
@@ -103,7 +101,13 @@ const ProductDetails = () => {
                             </button>
                         )
                     })
-                    attributesJSX.push(<div className={styles.textBtns}>{buttonsJSX}</div>);
+                    attributesJSX.push(
+                    <div
+                        className={styles.textBtns}
+                        data-testid={`product-attribute-${attributeSet.name}`}
+                    >
+                        {buttonsJSX}
+                    </div>);
                 }
             });
         }
@@ -164,7 +168,9 @@ const ProductDetails = () => {
                     </button>
                     <img src={data.product.gallery[currentPicture-1].url}
                         alt={data.product.name}
-                        className={styles.currentPicture} />
+                        className={styles.currentPicture}
+                        data-testid='product-gallery'
+                    />
                     <button
                         className={styles.nextPicture}
                         onClick={() =>
@@ -188,11 +194,15 @@ const ProductDetails = () => {
                 <button
                     className={styles.addCartBtn}
                     onClick={handleAddToCart}
-                    disabled={data.product.inStock === false}
-                    >
+                    disabled={data.product.inStock === false || !isAttributesSelected()}
+                    data-testid='add-to-cart'
+                >
                     Add to Cart
                 </button>
-                <div className={styles.description}>{parse(data.product.description)}</div>
+                <div className={styles.description}
+                    data-testid='product-description'
+                >{parse(data.product.description)}
+                </div>
             </div>
             {snackBar && <SnackBar text={snackBar.text} type={snackBar.type} />}
         </div>
