@@ -1,5 +1,5 @@
 import './App.css'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import Navbar from './components/Navbar/Navbar.tsx'
 import ProductList from './components/ProductList/ProductList.tsx'
 import {
@@ -52,6 +52,7 @@ const App = () => {
                 setIsCartOpen={setIsCartOpen}
               />
               <Routes>
+                <Route path="/" element={<Navigate to="/all" replace />} />
                 <Route path={`/${selectedCategory.name.toLowerCase()}`} element={<ProductList selectedCategory={selectedCategory}/>} />
                 <Route path="/product/:id" element={<ProductDetails />} />
               </Routes>
