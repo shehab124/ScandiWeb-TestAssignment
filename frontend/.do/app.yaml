@@ -3,7 +3,7 @@ services:
   - name: frontend
     source_dir: /frontend
     github:
-      repo: shehab124/ScandiWeb-TestAssignment
+      repo: your-username/ScandiWeb-TestAssignment
       branch: main
     build_command: npm ci && npm run build
     run_command: npx serve -s dist -l 8080
@@ -19,7 +19,7 @@ services:
   - name: backend
     source_dir: /backend
     github:
-      repo: shehab124/ScandiWeb-TestAssignment
+      repo: your-username/ScandiWeb-TestAssignment
       branch: main
     build_command: composer install --no-dev --optimize-autoloader
     run_command: apache2-foreground
