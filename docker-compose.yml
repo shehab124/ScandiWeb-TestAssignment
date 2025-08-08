@@ -7,11 +7,11 @@ services:
     ports:
       - "5173:5173"
     depends_on:
-      - www
+      - backend
     networks:
       - app-network
 
-  www:
+  backend:
     build: ./backend
     volumes:
       - ./backend/:/var/www/html # Mount the backend directory to the container
