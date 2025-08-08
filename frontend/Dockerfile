@@ -1,4 +1,4 @@
-# Production build
+# Development Dockerfile
 FROM node:18-alpine
 
 WORKDIR /app
@@ -7,16 +7,13 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm ci
+RUN npm install
 
 # Copy source code
 COPY . .
 
-# Build the application
-RUN npm run build
+# Expose port
+EXPOSE 5173
 
-# Expose port 8080
-EXPOSE 8080
-
-# Start the application
-CMD ["npm", "start"]
+# Start Vite dev server
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
