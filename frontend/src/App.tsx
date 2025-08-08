@@ -27,7 +27,7 @@ const errorLink = onError(({ graphQLErrors}) => {
 const link = from([
   errorLink,
   new HttpLink({
-    uri: 'http://localhost/graphql',
+    uri: import.meta.env.BACKEND_URL,
   })
 ])
 
@@ -52,7 +52,7 @@ const App = () => {
                 setIsCartOpen={setIsCartOpen}
               />
               <Routes>
-                <Route path={`/${selectedCategory.name}`} element={<ProductList selectedCategory={selectedCategory}/>} />
+                <Route path={`/${selectedCategory.name.toLowerCase()}`} element={<ProductList selectedCategory={selectedCategory}/>} />
                 <Route path="/product/:id" element={<ProductDetails />} />
               </Routes>
 
