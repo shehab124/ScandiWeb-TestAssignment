@@ -44,7 +44,7 @@ return (
                                 "active-category-link" : "category-link"}`}
                             onClick={() => {
                                 setSelectedCategory(category);
-                                navigate(`/?category=${category.id}`)
+                                navigate(`/${category.name.toLowerCase()}`)
                             }}
                     >
                         {category.name}

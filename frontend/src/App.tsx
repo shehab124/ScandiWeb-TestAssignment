@@ -52,7 +52,7 @@ const App = () => {
                 setIsCartOpen={setIsCartOpen}
               />
               <Routes>
-                <Route path="/" element={<ProductList selectedCategory={selectedCategory}/>} />
+                <Route path={`/${selectedCategory.name}`} element={<ProductList selectedCategory={selectedCategory}/>} />
                 <Route path="/product/:id" element={<ProductDetails />} />
               </Routes>
 
@@ -71,6 +71,7 @@ const App = () => {
                     zIndex: 500,
                     pointerEvents: 'auto'
                   }}
+                  data-testid='cart-overlay'
                 />
               )}
             </Router>
