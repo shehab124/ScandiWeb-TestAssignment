@@ -1,0 +1,47 @@
+name: scandiweb-test-assignment
+services:
+  - name: frontend
+    source_dir: /frontend
+    github:
+      repo: your-username/ScandiWeb-TestAssignment
+      branch: main
+    build_command: npm ci && npm run build
+    run_command: npx serve -s dist -l 8080
+    environment_slug: node-js
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    routes:
+      - path: /
+    envs:
+      - key: NODE_ENV
+        value: production
+
+  - name: backend
+    source_dir: /backend
+    github:
+      repo: your-username/ScandiWeb-TestAssignment
+      branch: main
+    build_command: composer install --no-dev --optimize-autoloader
+    run_command: apache2-foreground
+    environment_slug: php
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    routes:
+      - path: /api
+    envs:
+      - key: APP_ENV
+        value: production
+      - key: MYSQL_HOST
+        value: ${MYSQL_HOST}
+      - key: MYSQL_USER
+        value: ${MYSQL_USER}
+      - key: MYSQL_PASSWORD
+        value: ${MYSQL_PASSWORD}
+      - key: MYSQL_DATABASE
+        value: ${MYSQL_DATABASE}
+
+databases:
+  - name: db
+    engine: mysql
+    version: "8"
+    size: db-s-1vcpu-1gb
