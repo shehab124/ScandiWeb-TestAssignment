@@ -36,19 +36,21 @@ return (
         <div className={styles.navbarContainer}>
             <div className={styles.categories}>
                 {categories.map((category: {id: string, name: string}) => (
-                    <span
+                    <a
+                        href={`/${category.name.toLowerCase()}`}
                         className={`${styles.category}
                             ${category.id === selectedCategory.id ? styles.selectedCategory : ""}`}
                             key={category.id}
                             data-testid={`${category.id === selectedCategory.id ?
                                 "active-category-link" : "category-link"}`}
-                            onClick={() => {
+                            onClick={(e) => {
+                                e.preventDefault();
                                 setSelectedCategory(category);
                                 navigate(`/${category.name.toLowerCase()}`)
                             }}
                     >
                         {category.name}
-                    </span>
+                    </a>
                 ))}
             </div>
             <div className={styles.navbarCenter}>

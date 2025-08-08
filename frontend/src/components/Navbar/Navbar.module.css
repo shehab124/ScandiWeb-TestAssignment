@@ -68,6 +68,8 @@
 .category{
     padding: 1rem;
     cursor: pointer;
+    text-decoration: none;
+    color: inherit;
 }
 
 .category:hover{

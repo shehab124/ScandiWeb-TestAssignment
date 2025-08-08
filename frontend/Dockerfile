@@ -15,6 +15,10 @@ RUN npm install
 # Copy source code
 COPY . .
 
+# Accept build argument
+ARG VITE_GRAPHQL_URI
+ENV VITE_GRAPHQL_URI=$VITE_GRAPHQL_URI
+
 # Set environment for production build
 ENV NODE_ENV=production
 ENV VITE_MODE=production

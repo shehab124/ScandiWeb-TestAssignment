@@ -27,7 +27,7 @@ const errorLink = onError(({ graphQLErrors}) => {
 const link = from([
   errorLink,
   new HttpLink({
-    uri: import.meta.env.VITE_GRAPHQL_URI,
+    uri: 'http://164.92.223.71:8000/graphql',
   })
 ])
 
@@ -39,6 +39,8 @@ const client = new ApolloClient({
 const App = () => {
   const [selectedCategory, setSelectedCategory] = useState<Category>({id: "1", name: "ALL"});
   const [isCartOpen, setIsCartOpen] = useState(false);
+  console.log(import.meta.env.VITE_GRAPHQL_URI);
+  console.log('http://164.92.223.71:8000/graphql');
 
   return (
       <ApolloProvider client={client}>
