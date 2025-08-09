@@ -66,13 +66,14 @@ const ProductDetails = () => {
                                         selectedAttributes.has(attributeSet.name) &&
                                         selectedAttributes.get(attributeSet.name)?.value === attribute.value
                                     }
+                                    data-testid={`product-attribute-${attributeSet.name.toLowerCase()}-${attribute.value}`}
                                     />
                         )
                     })
                     attributesJSX.push(
                     <div
                         className={styles.colorButtons}
-                        data-testid={`product-attribute-${attributeSet.name}`}>
+                        data-testid={`product-attribute-${attributeSet.name.toLowerCase()}`}>
                             {buttonsJSX}
                     </div>
                     );
@@ -104,7 +105,7 @@ const ProductDetails = () => {
                     attributesJSX.push(
                     <div
                         className={styles.textBtns}
-                        data-testid={`product-attribute-${attributeSet.name}`}
+                        data-testid={`product-attribute-${attributeSet.name.toLowerCase()}`}
                     >
                         {buttonsJSX}
                     </div>);
