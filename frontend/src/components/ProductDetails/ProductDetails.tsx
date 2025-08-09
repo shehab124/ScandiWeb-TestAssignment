@@ -152,7 +152,6 @@ const ProductDetails = () => {
 
     return (
         <div className={styles.productDetails}>
-            <h1 className={styles.mobileTitle}>{data.product.name}</h1>
             <div className={styles.productImages}>
                 <div className={styles.smallPictures}>
                     {data.product.gallery.map((picture: {url: string, order: number}) => (
