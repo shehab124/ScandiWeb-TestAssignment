@@ -147,7 +147,7 @@ erDiagram
 7. **Attribute History**: Tracks which specific attributes were selected for each order item
 8. **Audit Trail**: Orders include creation timestamps for tracking
 
-## 🚀 Quick Start
+## 🚀 Development Setup
 
 ### Prerequisites
 - Docker and Docker Compose
@@ -182,7 +182,7 @@ erDiagram
    ALLOWED_ORIGINS=http://localhost,http://your-domain.com
    ```
 
-3. **Start the application**
+3. **Start the development environment**
    ```bash
    docker-compose up --build
    ```
@@ -237,16 +237,6 @@ ScandiWeb-TestAssignment/
    # Configure your local PHP environment
    ```
 
-### Building for Production
-
-```bash
-# Build all containers
-docker-compose build --no-cache
-
-# Start production environment
-docker-compose up -d
-```
-
 ### Database Management
 
 - **Access phpMyAdmin**: http://localhost:8001
@@ -254,15 +244,6 @@ docker-compose up -d
   ```bash
   docker exec -it scandiweb_mysql mysql -u root -p
   ```
-
-## 🧪 Testing
-
-The application includes comprehensive testing with Playwright for end-to-end testing:
-
-```bash
-# Run tests (if configured)
-npm test
-```
 
 ## 📝 API Documentation
 
