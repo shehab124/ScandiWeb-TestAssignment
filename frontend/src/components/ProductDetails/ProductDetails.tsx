@@ -10,7 +10,7 @@ import type { AttributeSet } from "../../interfaces/AttributeSet";
 import type { SelectedAttributes } from "../../interfaces/SelectedAttributes";
 import SnackBar from "../SnackBar/SnackBar";
 
-const ProductDetails = () => {
+const ProductDetails = ({setIsCartOpen}: {setIsCartOpen: (isOpen: boolean) => void}) => {
 
     const { id } = useParams();
     const { addItem, items, updateItemQuantity } = useCart();
@@ -147,6 +147,8 @@ const ProductDetails = () => {
             text: "Product added to cart",
             type: "success"
         });
+
+        setIsCartOpen(true);
     }
 
     if (loading) return <p>Loading...</p>;
