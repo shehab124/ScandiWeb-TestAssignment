@@ -188,7 +188,7 @@ erDiagram
    ```
 
 4. **Access the application**
-   - **Frontend**: http://localhost
+   - **Frontend**: http://localhost:5137
    - **Backend API**: http://localhost:8000/graphql
    - **phpMyAdmin**: http://localhost:8001
 
