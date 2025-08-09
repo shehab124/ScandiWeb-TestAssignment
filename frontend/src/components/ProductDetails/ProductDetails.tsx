@@ -181,7 +181,8 @@ const ProductDetails = () => {
                 </div>
             </div>
             <div className={styles.productInfo}>
-                <h1>{data.product.name} - {data.product.brand}</h1>
+                <h1>{data.product.name}</h1>
+                <h2>{data.product.brand}</h2>
                 {renderAttributes && (
                     <>
                         <div className={styles.attributes}>
