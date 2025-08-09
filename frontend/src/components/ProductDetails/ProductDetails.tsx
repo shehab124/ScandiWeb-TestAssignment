@@ -97,6 +97,7 @@ const ProductDetails = () => {
                                     })));
                                 }}
                                 disabled={selectedAttributes.has(attributeSet.name) && selectedAttributes.get(attributeSet.name)?.value === attribute.value}
+                                data-testid={`product-attribute-${attributeSet.name.toLowerCase()}-${attribute.value}`}
                             >
                                 {attribute.value}
                             </button>
