@@ -18,7 +18,6 @@ A modern, full-stack e-commerce application built with React, PHP, GraphQL, and 
 - **RESTful Architecture**: Clean API design with proper error handling
 - **Database Management**: MySQL with optimized queries and relationships
 - **Logging System**: Comprehensive logging with Monolog
-- **CORS Support**: Cross-origin resource sharing for frontend integration
 
 ### E-commerce Features
 - **Product Management**: Complete product lifecycle with categories, attributes, and pricing
