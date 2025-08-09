@@ -331,18 +331,4 @@ query GetProductById($id: String!) {
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🆘 Support
-
-If you encounter any issues or have questions:
-
-1. Check the [Issues](../../issues) page
-2. Review the documentation
-3. Contact the development team
-
----
-
 **Built with ❤️ using modern web technologies**
