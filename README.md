@@ -218,32 +218,6 @@ ScandiWeb-TestAssignment/
 └── README.md               # This file
 ```
 
-## 🔧 Development
-
-### Running in Development Mode
-
-1. **Frontend Development**
-   ```bash
-   cd frontend
-   npm install
-   npm run dev
-   ```
-
-2. **Backend Development**
-   ```bash
-   cd backend
-   composer install
-   # Configure your local PHP environment
-   ```
-
-### Database Management
-
-- **Access phpMyAdmin**: http://localhost:8001
-- **Direct MySQL access**:
-  ```bash
-  docker exec -it scandiweb_mysql mysql -u root -p
-  ```
-
 ## 📝 API Documentation
 
 ### GraphQL Endpoint
